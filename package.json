@@ -1,0 +1,16 @@
+{
+  "name": "gial-dsr",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GIAL Daily Service Reporting System",
+  "scripts": {
+    "dev:mobile": "cd packages/mobile && npx expo start",
+    "dev:web": "cd packages/web && npm run dev",
+    "dev:supabase": "supabase start",
+    "build:mobile": "cd packages/mobile && npx expo export",
+    "build:web": "cd packages/web && npm run build",
+    "lint": "cd packages/mobile && npx eslint . && cd ../../packages/web && npx eslint .",
+    "typecheck": "cd packages/mobile && npx tsc --noEmit && cd ../../packages/web && npx tsc --noEmit",
+    "test": "cd packages/mobile && npx jest && cd ../../packages/web && npx vitest run"
+  }
+}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smell Report — GIAL DSR Interface</title>
+  <style>
+    :root {
+      --bg: oklch(0.14 0.005 260);
+      --surface: oklch(0.18 0.006 260);
+      --border: oklch(0.25 0.007 260);
+      --text: oklch(0.88 0.005 260);
+      --muted: oklch(0.55 0.008 260);
+      --accent: oklch(0.72 0.12 145);
+      --fail: oklch(0.65 0.15 25);
+      --warn: oklch(0.75 0.14 80);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; padding: 48px 32px; max-width: 900px; margin: 0 auto; }
+    h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 40px; }
+    .score-box { display: flex; align-items: center; gap: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 32px; margin-bottom: 40px; }
+    .score-num { font-size: 48px; font-weight: 800; color: var(--warn); }
+    .score-label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+    .score-verdict { font-size: 15px; color: var(--text); margin-top: 4px; }
+    h2 { font-size: 20px; font-weight: 700; margin: 40px 0 16px; }
+    h3 { font-size: 16px; font-weight: 600; margin: 28px 0 12px; }
+    p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .tag-high { background: oklch(0.35 0.1 25); color: oklch(0.85 0.08 25); }
+    .tag-med { background: oklch(0.38 0.08 80); color: oklch(0.85 0.06 80); }
+    .tag-low { background: oklch(0.38 0.06 260); color: var(--muted); }
+    .tag-clean { background: oklch(0.3 0.06 145); color: oklch(0.85 0.06 145); }
+    .tag-fail { background: oklch(0.32 0.08 25); color: oklch(0.85 0.06 25); }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+    th { text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+    td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid oklch(0.16 0.005 260); }
+    .finding { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin-bottom: 16px; }
+    .finding h3 { margin-top: 0; }
+    code { background: oklch(0.22 0.006 260); padding: 1px 6px; border-radius: 4px; font-size: 12px; color: oklch(0.82 0.04 260); }
+    .fix-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; font-size: 13px; }
+    .fix-row .area { color: var(--text); font-weight: 500; }
+    .fix-row .mode { color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<h1>Smell Report</h1>
+<p class="subtitle">GIAL DSR Interface — 2026-07-02</p>
+
+<div class="score-box">
+  <div class="score-num">4/10</div>
+  <div>
+    <div class="score-label">STRONG</div>
+    <div class="score-verdict">The interface is functional but indistinguishable from any Tailwind Slate dark-mode admin template. Every color, layout shape, and type decision came from defaults, not from the domain.</div>
+  </div>
+</div>
+
+<h2>Heuristic Checklist</h2>
+<table>
+  <thead>
+    <tr><th>Odor</th><th>Status</th><th>Evidence</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Tech gradient</td><td><span class="tag tag-clean">CLEAN</span></td><td>No gradients in any surface</td></tr>
+    <tr><td>Generic tech hue</td><td><span class="tag tag-fail">DETECTED</span></td><td><code>#3b82f6</code> (blue-500) as sole primary accent with no domain justification</td></tr>
+    <tr><td>Feature tile grid</td><td><span class="tag tag-fail">DETECTED</span></td><td>5 identical stat cards in flex row, no hierarchy or variation</td></tr>
+    <tr><td>Accent rail</td><td><span class="tag tag-clean">CLEAN</span></td><td>No decorative side-stripe borders</td></tr>
+    <tr><td>Unearned blur</td><td><span class="tag tag-clean">CLEAN</span></td><td>No glassmorphism</td></tr>
+    <tr><td>Stat monument</td><td><span class="tag tag-fail">DETECTED</span></td><td>24px bold numbers centered in cards with no call to action</td></tr>
+    <tr><td>Icon topper</td><td><span class="tag tag-clean">CLEAN</span></td><td>No decorative section icons</td></tr>
+    <tr><td>Bounce everywhere</td><td><span class="tag tag-clean">CLEAN</span></td><td>No animation at all</td></tr>
+    <tr><td>Default type</td><td><span class="tag tag-fail">DETECTED</span></td><td>System font stack with no voice or project-specific reason</td></tr>
+    <tr><td>Center stack</td><td><span class="tag tag-fail">DETECTED</span></td><td>Login screens are centered card on dark background, universal pattern</td></tr>
+  </tbody>
+</table>
+
+<h2>Structural Findings</h2>
+
+<div class="finding">
+  <h3>S1. The Tailwind Slate Prison <span class="tag tag-high">HIGH</span></h3>
+  <p>Every neutral in this interface is a Tailwind Slate preset: <code>#0f172a</code> (900), <code>#1e293b</code> (800), <code>#334155</code> (700), <code>#94a3b8</code> (400). This exact combination has been copied into every dark-mode admin dashboard built since 2022. A single chromatic tint toward aviation, security, or the Assam region would differentiate this immediately.</p>
+</div>
+
+<div class="finding">
+  <h3>S2. Five Identical Stat Cards <span class="tag tag-high">HIGH</span></h3>
+  <p>The dashboard stat row renders "Today's Reports: 14/29", "Verified: 8", "Failed: 0", "Avg Sample Count: 47", and "Completion: 27%" in identical containers with identical styling. The primary operational indicator (how many machines are checked today) is given the same visual weight as a secondary metric. The design does not tell the admin what to look at first.</p>
+</div>
+
+<div class="finding">
+  <h3>S3. Composition Absence in the Table <span class="tag tag-med">MEDIUM</span></h3>
+  <p>The 9-column report table is a default scrollable data grid. The EVK status bubbles (green, red, amber) are the one correct domain-specific decision. The filter bar above has no visual connection to the table it controls.</p>
+</div>
+
+<div class="finding">
+  <h3>S4. System Fonts with No Voice <span class="tag tag-med">MEDIUM</span></h3>
+  <p><code>-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif</code> is the longest possible way to say "no choice was made." For a tool used by security personnel daily, the type has no weight, no character, and no readability optimization for the actual working environment (noisy, busy terminals).</p>
+</div>
+
+<h2>Severity Map</h2>
+<div class="fix-row"><span class="area">Slate-scale color system</span><span class="tag tag-high">HIGH</span> <span class="mode">/design recolor</span></div>
+<div class="fix-row"><span class="area">Identical stat cards, no hierarchy</span><span class="tag tag-high">HIGH</span> <span class="mode">/design relayout</span></div>
+<div class="fix-row"><span class="area">Composition absence in dashboard</span><span class="tag tag-high">HIGH</span> <span class="mode">/design redesign</span></div>
+<div class="fix-row"><span class="area">System font stack</span><span class="tag tag-med">MEDIUM</span> <span class="mode">/design typeset</span></div>
+<div class="fix-row"><span class="area">Centered login screens</span><span class="tag tag-low">LOW</span> <span class="mode">/design relayout</span></div>
+
+<h2>Domain Refusal</h2>
+<p>Airport security compliance is a real domain with a real visual language: urgency when equipment fails, calm when everything passes, precision in data display, the weight of regulatory obligation. None of those come through. The interface looks like it could be a SaaS analytics tool, a project management board, or a support desk. Nothing about it says "Aviation Security Directorate, BCAS."</p>
+
+<p><strong>One correct decision worth noting:</strong> The EVK status picker uses solid-colored backgrounds (green for verified, red for failed, amber for bypass). This is the right pattern for safety-critical status selection. Do not remove this in a cleanup pass.</p>
+
+<h2>Fix Guidance</h2>
+<p>A single <code>/design redesign</code> pass that selects a color strategy tied to the domain and restructures the dashboard composition would clear the top three smells (S1, S2, S3) at once. The font (S4) and login screen (S5) are smaller passes that can follow.</p>
+
+</body>
+</html>

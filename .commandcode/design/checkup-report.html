@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkup Report — GIAL DSR Interface</title>
+  <style>
+    :root {
+      --bg: oklch(0.13 0.008 70);
+      --surface: oklch(0.17 0.008 70);
+      --border: oklch(0.24 0.008 70);
+      --text: oklch(0.88 0.006 70);
+      --muted: oklch(0.55 0.01 70);
+      --accent: oklch(0.72 0.12 55);
+      --fail: oklch(0.55 0.18 25);
+      --pass: oklch(0.55 0.14 155);
+      --warn: oklch(0.72 0.14 65);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', system-ui, sans-serif; line-height: 1.6; padding: 48px 32px; max-width: 900px; margin: 0 auto; }
+    h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+    .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 40px; }
+    .score-box { display: flex; align-items: center; gap: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 32px; margin-bottom: 40px; }
+    .score-num { font-size: 48px; font-weight: 800; color: var(--accent); }
+    .score-label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+    .score-verdict { font-size: 14px; color: var(--muted); margin-top: 4px; }
+    h2 { font-size: 18px; font-weight: 700; margin: 40px 0 16px; }
+    h3 { font-size: 14px; font-weight: 600; margin: 24px 0 8px; }
+    p { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .tag-healthy { background: oklch(0.3 0.06 155); color: oklch(0.85 0.06 155); }
+    .tag-watch { background: oklch(0.35 0.06 65); color: oklch(0.88 0.06 65); }
+    .tag-critical { background: oklch(0.3 0.08 25); color: oklch(0.85 0.08 25); }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+    th { text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+    td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid oklch(0.16 0.006 70); }
+    .rx { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; margin-bottom: 12px; }
+    .rx h3 { margin-top: 0; }
+    code { background: oklch(0.2 0.006 70); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: oklch(0.8 0.04 70); }
+    .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .bar-label { width: 120px; font-size: 13px; color: var(--text); font-weight: 500; }
+    .bar-track { flex: 1; height: 6px; background: oklch(0.22 0.008 70); border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 3px; }
+    .bar-fill-healthy { background: var(--pass); }
+    .bar-fill-watch { background: var(--warn); }
+    .bar-fill-critical { background: var(--fail); }
+    .bar-score { width: 40px; font-size: 13px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+
+<h1>Checkup Report</h1>
+<p class="subtitle">GIAL DSR Interface — 2026-07-02 — Post-deslop assessment</p>
+
+<div class="score-box">
+  <div class="score-num">45/60</div>
+  <div>
+    <div class="score-label">HEALTHY WITH WATCH ITEMS</div>
+    <div class="score-verdict">Three critical vitals from the previous checkup (color, type, interaction states) are now resolved. Three vitals remain at Watch: responsiveness, speed, and accessibility. Safe to ship for GIAL Guwahati pilot.</div>
+  </div>
+</div>
+
+<h2>Vital Signs</h2>
+
+<div class="bar-row">
+  <span class="bar-label">Intentionality</span>
+  <div class="bar-track"><div class="bar-fill bar-fill-healthy" style="width:100%"></div></div>
+  <span class="bar-score">10/10</span>
+</div>
+<div class="bar-row">
+  <span class="bar-label">Readability</span>
+  <div class="bar-track"><div class="bar-fill bar-fill-healthy" style="width:100%"></div></div>
+  <span class="bar-score">10/10</span>
+</div>
+<div class="bar-row">
+  <span class="bar-label">Usability</span>
+  <div class="bar-track"><div class="bar-fill bar-fill-healthy" style="width:100%"></div></div>
+  <span class="bar-score">10/10</span>
+</div>
+<div class="bar-row">
+  <span class="bar-label">Responsiveness</span>
+  <div class="bar-track"><div class="bar-fill bar-fill-watch" style="width:50%"></div></div>
+  <span class="bar-score">5/10</span>
+</div>
+<div class="bar-row">
+  <span class="bar-label">Speed</span>
+  <div class="bar-track"><div class="bar-fill bar-fill-watch" style="width:50%"></div></div>
+  <span class="bar-score">5/10</span>
+</div>
+<div class="bar-row">
+  <span class="bar-label">Accessibility</span>
+  <div class="bar-track"><div class="bar-fill bar-fill-watch" style="width:50%"></div></div>
+  <span class="bar-score">5/10</span>
+</div>
+
+<h2>Detailed Findings</h2>
+
+<table>
+  <thead><tr><th>Vital</th><th>Score</th><th>Status</th><th>Evidence</th></tr></thead>
+  <tbody>
+    <tr><td>Intentionality</td><td>10/10</td><td><span class="tag tag-healthy">HEALTHY</span></td><td>Warm stone palette, IBM Plex Sans, hero metric, uppercase labels. All chosen, not defaulted.</td></tr>
+    <tr><td>Readability</td><td>10/10</td><td><span class="tag tag-healthy">HEALTHY</span></td><td>14px body at 1.5 line-height. ~12:1 contrast. 48px hero number. 13px table text readable.</td></tr>
+    <tr><td>Usability</td><td>10/10</td><td><span class="tag tag-healthy">HEALTHY</span></td><td>Core flows complete. Loading spinner, empty states, error messages present. EVK uses color + text.</td></tr>
+    <tr><td>Responsiveness</td><td>5/10</td><td><span class="tag tag-watch">WATCH</span></td><td>No media queries. FlexWrap helps but breakpoint behavior untested. No iPad adaptation.</td></tr>
+    <tr><td>Speed</td><td>5/10</td><td><span class="tag tag-watch">WATCH</span></td><td>Google Fonts @import blocks render. No font-display: swap. No preload.</td></tr>
+    <tr><td>Accessibility</td><td>5/10</td><td><span class="tag tag-watch">WATCH</span></td><td>Focus ring defined. Labels present. Missing: aria-live, skip-to-content, accessibilityLabel on mobile.</td></tr>
+  </tbody>
+</table>
+
+<h2>Prescriptions</h2>
+
+<div class="rx">
+  <h3>P1. Responsiveness <span class="tag tag-watch">WATCH</span></h3>
+  <p><strong>What:</strong> No breakpoints. Hero metric wraps uncontrolled on tablet. 9-column table needs horizontal scroll on narrow screens.</p>
+  <p><strong>Why:</strong> Admins may check the dashboard on tablets during terminal walkthroughs.</p>
+  <p><strong>Fix:</strong> <code>/design responsive</code>. Add breakpoints at 768px and 1024px.</p>
+</div>
+
+<div class="rx">
+  <h3>P2. Speed <span class="tag tag-watch">WATCH</span></h3>
+  <p><strong>What:</strong> Google Fonts @import is render-blocking. No font-display: swap parameter.</p>
+  <p><strong>Why:</strong> Slow connections at cargo terminals add 200-500ms blank screen.</p>
+  <p><strong>Fix:</strong> Add <code>&display=swap</code> to the font URL. Or self-host with @font-face.</p>
+</div>
+
+<div class="rx">
+  <h3>P3. Accessibility <span class="tag tag-watch">WATCH</span></h3>
+  <p><strong>What:</strong> No aria-live on dynamic content. No accessibilityLabel on mobile inputs. Error messages are red-text-only.</p>
+  <p><strong>Why:</strong> Screen reader users and color-blind users cannot fully operate the interface.</p>
+  <p><strong>Fix:</strong> <code>/design interaction</code>. Add aria-live, accessibilityLabel, and error message prefixes.</p>
+</div>
+
+<h2>Resolved From Previous Checkup</h2>
+<p>The deslop pass resolved the three critical vitals:</p>
+<p><strong>Color (was CRITICAL):</strong> Warm stone palette with amber accent replaces Tailwind Slate + Blue-500.</p>
+<p><strong>Type (was CRITICAL):</strong> IBM Plex Sans with defined scale replaces system font stack.</p>
+<p><strong>Interaction States (was CRITICAL):</strong> Focus ring, loading spinner, empty states, and error messages all present.</p>
+<p>The remaining three vitals are Watch, not Critical. The interface is safe to ship for the GIAL Guwahati pilot. The Watch items should be addressed before the second airport onboarding.</p>
+
+</body>
+</html>

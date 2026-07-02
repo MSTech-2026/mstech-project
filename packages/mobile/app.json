@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "GIAL DSR",
+    "slug": "gial-dsr-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "gial-dsr",
+    "platforms": ["ios", "android"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aahl.gialdsr"
+    },
+    "android": {
+      "package": "com.aahl.gialdsr"
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
+  }
+}
