@@ -7,7 +7,6 @@ import { Dashboard } from './components/Dashboard';
 export function App() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     checkSession();
   }, []);

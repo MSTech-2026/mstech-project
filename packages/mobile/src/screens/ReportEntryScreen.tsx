@@ -3,12 +3,17 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   Alert,
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { submitReport } from '../lib/sync';
 import { useStore } from '../store';
@@ -90,13 +95,23 @@ export function ReportEntryScreen() {
             {machine.serial_number} &mdash; {evkStatus}
           </Text>
           <Text style={styles.successDetail}>Sample count: {sampleCount}</Text>
-          <TouchableOpacity
-            style={styles.doneButton}
+          <Pressable
             onPress={() => navigation.goBack()}
-            activeOpacity={0.7}
           >
-            <Text style={styles.doneButtonText}>Back to machines</Text>
-          </TouchableOpacity>
+            {({ pressed }) => {
+              const scale = useSharedValue(1);
+              scale.value = withSpring(pressed ? 0.96 : 1, { damping: 15 });
+              const animatedStyle = useAnimatedStyle(() => ({
+                transform: [{ scale: scale.value }],
+              }));
+
+              return (
+                <Animated.View style={[styles.submitButton, animatedStyle]}>
+                  <Text style={styles.submitButtonText}>Back to machines</Text>
+                </Animated.View>
+              );
+            }}
+          </Pressable>
         </View>
       </View>
     );
@@ -130,27 +145,41 @@ export function ReportEntryScreen() {
       <Text style={styles.label}>EVK status</Text>
       <View style={styles.evkRow}>
         {EVK_OPTIONS.map((opt) => (
-          <TouchableOpacity
+          <Pressable
             key={opt.value}
-            style={[
-              styles.evkButton,
-              evkStatus === opt.value && styles.evkButtonActive,
-              opt.value === 'verified' && evkStatus === 'verified' && styles.evkVerified,
-              opt.value === 'failed' && evkStatus === 'failed' && styles.evkFailed,
-              opt.value === 'bypass' && evkStatus === 'bypass' && styles.evkBypass,
-            ]}
             onPress={() => setEvkStatus(opt.value)}
-            activeOpacity={0.7}
+            style={{ flex: 1 }}
           >
-            <Text
-              style={[
-                styles.evkButtonText,
-                evkStatus === opt.value && styles.evkButtonTextActive,
-              ]}
-            >
-              {opt.label}
-            </Text>
-          </TouchableOpacity>
+            {({ pressed }) => {
+              const scale = useSharedValue(1);
+              scale.value = withSpring(pressed ? 0.96 : 1, { damping: 15 });
+              const animatedStyle = useAnimatedStyle(() => ({
+                transform: [{ scale: scale.value }],
+              }));
+
+              return (
+                <Animated.View
+                  style={[
+                    styles.evkButton,
+                    evkStatus === opt.value && styles.evkButtonActive,
+                    opt.value === 'verified' && evkStatus === 'verified' && styles.evkVerified,
+                    opt.value === 'failed' && evkStatus === 'failed' && styles.evkFailed,
+                    opt.value === 'bypass' && evkStatus === 'bypass' && styles.evkBypass,
+                    animatedStyle,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.evkButtonText,
+                      evkStatus === opt.value && styles.evkButtonTextActive,
+                    ]}
+                  >
+                    {opt.label}
+                  </Text>
+                </Animated.View>
+              );
+            }}
+          </Pressable>
         ))}
       </View>
 
@@ -171,18 +200,34 @@ export function ReportEntryScreen() {
         </>
       )}
 
-      <TouchableOpacity
-        style={[styles.submitButton, !canSubmit && styles.submitButtonDisabled]}
+      <Pressable
         onPress={handleSubmit}
         disabled={!canSubmit || submitting}
-        activeOpacity={0.7}
       >
-        {submitting ? (
-          <ActivityIndicator color={colors.accentFg} />
-        ) : (
-          <Text style={styles.submitButtonText}>Submit report</Text>
-        )}
-      </TouchableOpacity>
+        {({ pressed }) => {
+          const scale = useSharedValue(1);
+          scale.value = withSpring(pressed && canSubmit ? 0.96 : 1, { damping: 15 });
+          const animatedStyle = useAnimatedStyle(() => ({
+            transform: [{ scale: scale.value }],
+          }));
+
+          return (
+            <Animated.View
+              style={[
+                styles.submitButton,
+                !canSubmit && styles.submitButtonDisabled,
+                animatedStyle,
+              ]}
+            >
+              {submitting ? (
+                <ActivityIndicator color={colors.accentFg} />
+              ) : (
+                <Text style={styles.submitButtonText}>Submit report</Text>
+              )}
+            </Animated.View>
+          );
+        }}
+      </Pressable>
     </ScrollView>
   );
 }
@@ -196,18 +241,23 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   machineInfo: {
-    backgroundColor: colors.bg2,
-    borderRadius: 8,
-    padding: 16,
+    backgroundColor: colors.bg1,
+    borderRadius: 16,
+    padding: 20,
     marginBottom: 20,
     borderWidth: 1,
     borderColor: colors.borderDefault,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
+    elevation: 1,
   },
   machineSerial: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700',
-    color: colors.text1,
-    marginBottom: 4,
+    color: colors.text0,
+    marginBottom: 6,
     fontVariant: ['tabular-nums'],
   },
   machineMeta: {
@@ -220,36 +270,42 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
-    backgroundColor: colors.bg2,
-    padding: 14,
-    borderRadius: 8,
+    backgroundColor: colors.bg1,
+    padding: 16,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.borderDefault,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
+    elevation: 1,
   },
   dateLabel: {
-    fontSize: 13,
-    color: colors.text3,
-  },
-  dateValue: {
     fontSize: 14,
     color: colors.text1,
+    fontWeight: '500',
+  },
+  dateValue: {
+    fontSize: 15,
+    color: colors.text0,
     fontWeight: '600',
     fontVariant: ['tabular-nums'],
   },
   label: {
-    fontSize: 11,
-    color: colors.text3,
+    fontSize: 12,
+    color: colors.text1,
     marginBottom: 8,
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   input: {
-    backgroundColor: colors.bg2,
-    borderRadius: 6,
-    padding: 12,
-    fontSize: 16,
-    color: colors.text1,
+    backgroundColor: colors.bg1,
+    borderRadius: 12,
+    padding: 14,
+    fontSize: 15,
+    color: colors.text0,
     marginBottom: 20,
     borderWidth: 1,
     borderColor: colors.borderDefault,
@@ -266,10 +322,10 @@ const styles = StyleSheet.create({
   evkButton: {
     flex: 1,
     padding: 14,
-    borderRadius: 6,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.borderDefault,
-    backgroundColor: colors.bg2,
+    backgroundColor: colors.bg1,
     alignItems: 'center',
   },
   evkButtonActive: {
@@ -288,19 +344,20 @@ const styles = StyleSheet.create({
     borderColor: colors.bypass,
   },
   evkButtonText: {
-    fontSize: 13,
-    color: colors.text3,
+    fontSize: 14,
+    color: colors.text2,
     fontWeight: '600',
   },
   evkButtonTextActive: {
-    color: colors.text1,
+    color: colors.text0,
   },
   submitButton: {
     backgroundColor: colors.accent,
-    borderRadius: 6,
+    borderRadius: 12,
     padding: 16,
     alignItems: 'center',
     marginTop: 10,
+    width: '100%',
   },
   submitButtonDisabled: {
     opacity: 0.4,
@@ -308,13 +365,21 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: colors.accentFg,
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   successCard: {
-    flex: 1,
-    justifyContent: 'center',
+    backgroundColor: colors.bg1,
+    borderRadius: 16,
+    padding: 32,
     alignItems: 'center',
-    padding: 20,
+    margin: 20,
+    borderWidth: 1,
+    borderColor: colors.borderDefault,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 3,
   },
   successCircle: {
     width: 64,
@@ -323,18 +388,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.verified,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
   },
   successCheckmark: {
     fontSize: 28,
-    color: colors.bg0,
+    color: '#FFFFFF',
     fontWeight: '700',
   },
   successTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
-    color: colors.text1,
-    marginBottom: 12,
+    color: colors.text0,
+    marginBottom: 16,
   },
   successDetail: {
     fontSize: 14,

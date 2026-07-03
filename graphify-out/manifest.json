@@ -1,0 +1,217 @@
+{
+  "/home/sumeet/MSTech/package.json": {
+    "mtime": 1782970573.0180905,
+    "ast_hash": "d07856b6b3030fe0212baf2b3f3e99ec",
+    "semantic_hash": "d07856b6b3030fe0212baf2b3f3e99ec"
+  },
+  "/home/sumeet/MSTech/packages/mobile/package.json": {
+    "mtime": 1782971667.143958,
+    "ast_hash": "298845e49ce19785f69dd8b6b0347d58",
+    "semantic_hash": "298845e49ce19785f69dd8b6b0347d58"
+  },
+  "/home/sumeet/MSTech/packages/mobile/app.json": {
+    "mtime": 1782970673.4563622,
+    "ast_hash": "55e25c3a83259f8cf97a779f7e36f827",
+    "semantic_hash": "55e25c3a83259f8cf97a779f7e36f827"
+  },
+  "/home/sumeet/MSTech/packages/mobile/App.tsx": {
+    "mtime": 1782975964.1911695,
+    "ast_hash": "e2dfb41479100684a0d36c3689b5c71e",
+    "semantic_hash": "e2dfb41479100684a0d36c3689b5c71e"
+  },
+  "/home/sumeet/MSTech/packages/mobile/tsconfig.json": {
+    "mtime": 1782971406.2473066,
+    "ast_hash": "f67d39bbc8d1188a133ce25d8939d9b6",
+    "semantic_hash": "f67d39bbc8d1188a133ce25d8939d9b6"
+  },
+  "/home/sumeet/MSTech/packages/mobile/src/lib/db.ts": {
+    "mtime": 1782977387.0401993,
+    "ast_hash": "97fc4e257b807e9a8057175a881e9245",
+    "semantic_hash": "97fc4e257b807e9a8057175a881e9245"
+  },
+  "/home/sumeet/MSTech/packages/mobile/src/lib/supabase.ts": {
+    "mtime": 1782970710.1525097,
+    "ast_hash": "1480163fc1e28da662ffaf22c1bcef27",
+    "semantic_hash": "1480163fc1e28da662ffaf22c1bcef27"
+  },
+  "/home/sumeet/MSTech/packages/mobile/src/lib/sync.ts": {
+    "mtime": 1782977431.5999212,
+    "ast_hash": "07d7874fa7d03a9e6cd7fe3db76e2014",
+    "semantic_hash": "07d7874fa7d03a9e6cd7fe3db76e2014"
+  },
+  "/home/sumeet/MSTech/packages/mobile/src/store/index.ts": {
+    "mtime": 1782981688.6701705,
+    "ast_hash": "15b81e1f5b5d1e566348c95bf2100b26",
+    "semantic_hash": "15b81e1f5b5d1e566348c95bf2100b26"
+  },
+  "/home/sumeet/MSTech/packages/mobile/src/screens/LoginScreen.tsx": {
+    "mtime": 1782980313.074146,
+    "ast_hash": "9271f1985dafc44c17bb9c90115249e8",
+    "semantic_hash": "9271f1985dafc44c17bb9c90115249e8"
+  },
+  "/home/sumeet/MSTech/packages/mobile/src/screens/ReportEntryScreen.tsx": {
+    "mtime": 1782980342.3395495,
+    "ast_hash": "ee51257383233a1ced97924f080dc4bf",
+    "semantic_hash": "ee51257383233a1ced97924f080dc4bf"
+  },
+  "/home/sumeet/MSTech/packages/mobile/src/screens/MachineListScreen.tsx": {
+    "mtime": 1782980320.6053033,
+    "ast_hash": "7e28a7ff6e4958e22a2e690fb84bd7bf",
+    "semantic_hash": "7e28a7ff6e4958e22a2e690fb84bd7bf"
+  },
+  "/home/sumeet/MSTech/packages/mobile/src/types/index.ts": {
+    "mtime": 1782970710.1525097,
+    "ast_hash": "be49b5a9cac635d002d6eab70d33c880",
+    "semantic_hash": "be49b5a9cac635d002d6eab70d33c880"
+  },
+  "/home/sumeet/MSTech/packages/web/package.json": {
+    "mtime": 1782971670.8319354,
+    "ast_hash": "4f377c02f4064af616cb5dbeb0cc8bdc",
+    "semantic_hash": "4f377c02f4064af616cb5dbeb0cc8bdc"
+  },
+  "/home/sumeet/MSTech/packages/web/tsconfig.json": {
+    "mtime": 1782970833.9320676,
+    "ast_hash": "701402027e89503f40e4fa2e450682fc",
+    "semantic_hash": "701402027e89503f40e4fa2e450682fc"
+  },
+  "/home/sumeet/MSTech/packages/web/tsconfig.node.json": {
+    "mtime": 1782970833.9320676,
+    "ast_hash": "767b2e9abe6452170cdc399ca052cfbc",
+    "semantic_hash": "767b2e9abe6452170cdc399ca052cfbc"
+  },
+  "/home/sumeet/MSTech/packages/web/vite.config.ts": {
+    "mtime": 1782970833.9320676,
+    "ast_hash": "99324a6303f1287cf16c9a9f934e1738",
+    "semantic_hash": "99324a6303f1287cf16c9a9f934e1738"
+  },
+  "/home/sumeet/MSTech/packages/web/src/main.tsx": {
+    "mtime": 1782970921.6805048,
+    "ast_hash": "53716fe912dc674fcdf01e50bc47af38",
+    "semantic_hash": "53716fe912dc674fcdf01e50bc47af38"
+  },
+  "/home/sumeet/MSTech/packages/web/src/App.tsx": {
+    "mtime": 1782981642.1023264,
+    "ast_hash": "2cdf2d7f9605387bb6e1e710c5f85dcd",
+    "semantic_hash": "2cdf2d7f9605387bb6e1e710c5f85dcd"
+  },
+  "/home/sumeet/MSTech/packages/web/src/vite-env.d.ts": {
+    "mtime": 1782971021.3590288,
+    "ast_hash": "0352474ba2918efe13895edbc3780d94",
+    "semantic_hash": "0352474ba2918efe13895edbc3780d94"
+  },
+  "/home/sumeet/MSTech/packages/web/src/lib/supabase.ts": {
+    "mtime": 1782970848.9141402,
+    "ast_hash": "2f0598c4bb8a3fdc4a55bb17b360b3a0",
+    "semantic_hash": "2f0598c4bb8a3fdc4a55bb17b360b3a0"
+  },
+  "/home/sumeet/MSTech/packages/web/src/lib/excel.ts": {
+    "mtime": 1782970848.9141402,
+    "ast_hash": "33fc79c2f507570f054c92acec3fdf34",
+    "semantic_hash": "33fc79c2f507570f054c92acec3fdf34"
+  },
+  "/home/sumeet/MSTech/packages/web/src/components/Login.tsx": {
+    "mtime": 1782980087.6348226,
+    "ast_hash": "35bc0f67a9a0a1fb0463a22828e0df5a",
+    "semantic_hash": "35bc0f67a9a0a1fb0463a22828e0df5a"
+  },
+  "/home/sumeet/MSTech/packages/web/src/components/Dashboard.tsx": {
+    "mtime": 1782980303.5899656,
+    "ast_hash": "54b0f8e928dfa2971cce7f769e45b54b",
+    "semantic_hash": "54b0f8e928dfa2971cce7f769e45b54b"
+  },
+  "/home/sumeet/MSTech/packages/web/src/types/index.ts": {
+    "mtime": 1782970848.9141402,
+    "ast_hash": "415c009252e23f0f9b68ae4a58065226",
+    "semantic_hash": "415c009252e23f0f9b68ae4a58065226"
+  },
+  "/home/sumeet/MSTech/supabase/deploy.sql": {
+    "mtime": 1782975861.5441346,
+    "ast_hash": "1a4e3f43ae0e059ad4c04a607018069a",
+    "semantic_hash": "1a4e3f43ae0e059ad4c04a607018069a"
+  },
+  "/home/sumeet/MSTech/supabase/security-patch.sql": {
+    "mtime": 1782981567.9932845,
+    "ast_hash": "89274c3004477815d6d23c9576cd0f7c",
+    "semantic_hash": "89274c3004477815d6d23c9576cd0f7c"
+  },
+  "/home/sumeet/MSTech/supabase/migrations/00001_core_schema.sql": {
+    "mtime": 1782970600.4991286,
+    "ast_hash": "ea5dbc83f841e5c4807c65ecd2272724",
+    "semantic_hash": "ea5dbc83f841e5c4807c65ecd2272724"
+  },
+  "/home/sumeet/MSTech/supabase/migrations/00002_rls_policies.sql": {
+    "mtime": 1782981528.0273366,
+    "ast_hash": "a4b536325e0e4b61e608612a9945073c",
+    "semantic_hash": "a4b536325e0e4b61e608612a9945073c"
+  },
+  "/home/sumeet/MSTech/supabase/migrations/00003_seed_data.sql": {
+    "mtime": 1782981447.809198,
+    "ast_hash": "f73befa42ee63a766cff32d079c1001d",
+    "semantic_hash": "f73befa42ee63a766cff32d079c1001d"
+  },
+  "/home/sumeet/MSTech/AGENTS.md": {
+    "mtime": 1782980679.584077,
+    "ast_hash": "d8eb8e173f9af0930f6d34732410184b",
+    "semantic_hash": "d8eb8e173f9af0930f6d34732410184b"
+  },
+  "/home/sumeet/MSTech/PROJECT_FOUNDATION.md": {
+    "mtime": 1782970288.594898,
+    "ast_hash": "18c184f5a018ffe2bd4c4040e82b9668",
+    "semantic_hash": "18c184f5a018ffe2bd4c4040e82b9668"
+  },
+  "/home/sumeet/MSTech/resume.txt": {
+    "mtime": 1782983415.787627,
+    "ast_hash": "078909271aa2a9219d66104306ec0969",
+    "semantic_hash": "078909271aa2a9219d66104306ec0969"
+  },
+  "/home/sumeet/MSTech/.commandcode/taste/taste.md": {
+    "mtime": 1782983350.319297,
+    "ast_hash": "0f0ea13a48fd9dc655eeb20a6b8a9f27",
+    "semantic_hash": "0f0ea13a48fd9dc655eeb20a6b8a9f27"
+  },
+  "/home/sumeet/MSTech/.commandcode/design/smell-report.md": {
+    "mtime": 1782977952.3732893,
+    "ast_hash": "bbe37ad83f376d39298f937cd53a6580",
+    "semantic_hash": "bbe37ad83f376d39298f937cd53a6580"
+  },
+  "/home/sumeet/MSTech/.commandcode/design/smell-report.html": {
+    "mtime": 1782977990.8152368,
+    "ast_hash": "b479dec2e71517e91828aa03813e102a",
+    "semantic_hash": "b479dec2e71517e91828aa03813e102a"
+  },
+  "/home/sumeet/MSTech/.commandcode/design/checkup-report.md": {
+    "mtime": 1782978507.0619633,
+    "ast_hash": "3e72fdb339fef2a93c2a314ffa25b2f8",
+    "semantic_hash": "3e72fdb339fef2a93c2a314ffa25b2f8"
+  },
+  "/home/sumeet/MSTech/.commandcode/design/review-report.md": {
+    "mtime": 1782978182.0200036,
+    "ast_hash": "cfba3b0cfde3e7b92e9c388c141afcff",
+    "semantic_hash": "cfba3b0cfde3e7b92e9c388c141afcff"
+  },
+  "/home/sumeet/MSTech/.commandcode/design/checkup-report.html": {
+    "mtime": 1782978545.048368,
+    "ast_hash": "a92d851a9e79084ab1dd5d1a3e1f6eeb",
+    "semantic_hash": "a92d851a9e79084ab1dd5d1a3e1f6eeb"
+  },
+  "/home/sumeet/MSTech/.commandcode/design/review-report.html": {
+    "mtime": 1782978393.8599381,
+    "ast_hash": "aeda1e4b8cdebd63b598fd77e17a2f86",
+    "semantic_hash": "aeda1e4b8cdebd63b598fd77e17a2f86"
+  },
+  "/home/sumeet/MSTech/.commandcode/design/brief.md": {
+    "mtime": 1782979833.6949713,
+    "ast_hash": "ba6aa374e46d7d581a1655800c528c4a",
+    "semantic_hash": "ba6aa374e46d7d581a1655800c528c4a"
+  },
+  "/home/sumeet/MSTech/packages/web/index.html": {
+    "mtime": 1782980374.3335738,
+    "ast_hash": "24e1e8a7c3cf084b279e7f215a2eea61",
+    "semantic_hash": "24e1e8a7c3cf084b279e7f215a2eea61"
+  },
+  "/home/sumeet/MSTech/packages/web/public/favicon.svg": {
+    "mtime": 1782980360.6617823,
+    "ast_hash": "9610fbdda90a89a3294580886d9e822b",
+    "semantic_hash": "9610fbdda90a89a3294580886d9e822b"
+  }
+}

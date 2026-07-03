@@ -11,7 +11,7 @@ export function startSyncListener(onCountChange: (count: number) => void) {
         const store = mod.useStore.getState();
         if (store.profile?.site_id && store.user?.id) {
           flushPendingQueue(store.profile.site_id, store.user.id).then(async () => {
-            onCountChange(await db.getPendingReportCount());
+            onCountChange(await db.refreshPendingCount());
           });
         }
       });
@@ -108,6 +108,6 @@ export async function submitReport(
     return { success: true, offline: false };
   }
 
-  await db.insertPendingReport(report);
+  db.insertPendingReport(report);
   return { success: true, offline: true };
 }

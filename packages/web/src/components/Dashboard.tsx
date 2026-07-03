@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { supabase } from '../lib/supabase';
 import { exportToExcel } from '../lib/excel';
 import { Profile, DailyReport, Machine } from '../types';
+import { Select } from './Select';
 
 interface DashboardProps {
   profile: Profile;
@@ -42,13 +45,19 @@ export function Dashboard({ profile, onLogout }: DashboardProps) {
     ]);
 
     if (reportsRes.data) {
-      const mapped = reportsRes.data.map((r: any) => ({
-        ...r,
-        machine_serial: r.machines?.serial_number,
-        machine_model: r.machines?.model,
-        machine_location: r.machines?.location,
-        technician_email: r.profiles?.email,
-      }));
+      const mapped = reportsRes.data.map((r: unknown) => {
+        if (!r || typeof r !== 'object') return r;
+        const record = r as Record<string, unknown>;
+        const m = record.machines as Record<string, string> | undefined;
+        const p = record.profiles as Record<string, string> | undefined;
+        return {
+          ...record,
+          machine_serial: m?.serial_number,
+          machine_model: m?.model,
+          machine_location: m?.location,
+          technician_email: p?.email,
+        };
+      });
       setReports(mapped as DailyReport[]);
     }
 
@@ -87,172 +96,242 @@ export function Dashboard({ profile, onLogout }: DashboardProps) {
   const todayStr = new Date().toISOString().split('T')[0];
   const isToday = filterDate === todayStr;
 
+  const container = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (loading) return;
+    
+    const tl = gsap.timeline();
+    
+    // Animate Header
+    tl.fromTo('.profile-card', 
+      { y: -10, opacity: 0 }, 
+      { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' }
+    );
+
+    // Animate Hero section elements
+    tl.fromTo('.hero-section', 
+      { y: 20, opacity: 0 }, 
+      { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out' },
+      "-=0.2"
+    );
+
+    // Animate filters
+    tl.fromTo('.filter-bar', 
+      { y: 15, opacity: 0 }, 
+      { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' },
+      "-=0.3"
+    );
+
+    // Stagger table rows
+    tl.fromTo('.content-table tbody tr', 
+      { y: 20, opacity: 0 }, 
+      { y: 0, opacity: 1, duration: 0.4, stagger: 0.05, ease: 'power2.out' },
+      "-=0.2"
+    );
+  }, [loading, filteredReports]);
+
   return (
-    <div style={styles.container}>
-      <header className="header-inner">
-        <div>
-          <h1 style={styles.headerTitle}>GIAL DSR</h1>
-          <p style={styles.headerSub}>Daily Service Report, Guwahati International Airport</p>
+    <div className="app-layout" ref={container}>
+      {/* Sidebar */}
+      <aside className="sidebar">
+        <div className="sidebar-header">
+          <h1 className="sidebar-title">GIAL DSR</h1>
         </div>
-        <div className="header-right">
-          <span style={styles.userEmail}>{profile.email}</span>
-          <span style={styles.roleBadge}>{profile.role.toUpperCase()}</span>
-          <button onClick={onLogout} style={styles.logoutBtn}>Sign out</button>
-        </div>
-      </header>
-
-      {isToday && (
-        <section className="hero-inner" aria-live="polite" aria-label="Daily verification status">
-          <div style={styles.heroStat}>
-            <span style={styles.heroNumber}>{stats.total}</span>
-            <span style={styles.heroDenom}>/{MACHINES_TOTAL}</span>
+        <nav className="sidebar-nav">
+          <div className="nav-item active">Dashboard</div>
+          <div className="nav-item">Reports</div>
+          <div className="nav-item">Machines</div>
+        </nav>
+        <div className="sidebar-footer">
+          <div className="user-info">
+            <span className="user-email">{profile.email}</span>
+            <span className="user-role">{profile.role.toUpperCase()}</span>
           </div>
-          <div style={styles.heroMeta}>
-            <p style={styles.heroLabel}>machines logged today</p>
-            <div style={styles.heroBar}>
-              <div style={{ ...styles.heroBarFill, width: `${stats.percentage}%` }} />
-            </div>
-            {stats.missing > 0 && (
-              <p style={styles.heroMissing}>{stats.missing} machine{stats.missing > 1 ? 's' : ''} pending</p>
-            )}
-            {stats.missing === 0 && (
-              <p style={styles.heroComplete}>All machines verified</p>
-              )}
-            </div>
-            <div className="hero-breakdown">
-              <div style={styles.heroBreakItem}>
-                <span style={{ ...styles.heroBreakDot, backgroundColor: 'var(--verified)' }} />
-                <span style={styles.heroBreakLabel}>{stats.verified} verified</span>
+          <button onClick={onLogout} className="logout-btn" title="Sign out">&#x23FB;</button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="main-content">
+        <header className="top-bar">
+          <div className="breadcrumb">
+            <span className="breadcrumb-active">Dashboard</span> / Today
+          </div>
+          <div className="search-bar">
+            <input type="text" placeholder="Search..." className="search-input" />
+          </div>
+        </header>
+
+        <div className="content-body">
+          {/* Left Panel: Context/Stats */}
+          <div className="left-panel">
+            <div className="profile-card">
+              <div className="profile-header">
+                <div className="profile-avatar">
+                  {profile.email.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h2 className="profile-name">Today's Status</h2>
+                  <p className="profile-meta">
+                    {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}
+                  </p>
+                </div>
               </div>
-              {stats.failed > 0 && (
-                <div style={styles.heroBreakItem}>
-                  <span style={{ ...styles.heroBreakDot, backgroundColor: 'var(--failed)' }} />
-                  <span style={styles.heroBreakLabel}>{stats.failed} failed</span>
-                </div>
-              )}
-              {stats.bypass > 0 && (
-                <div style={styles.heroBreakItem}>
-                  <span style={{ ...styles.heroBreakDot, backgroundColor: 'var(--bypass)' }} />
-                  <span style={styles.heroBreakLabel}>{stats.bypass} bypass</span>
+              
+              <h3 className="section-title">Overview</h3>
+              
+              <div className="stat-row">
+                <span className="stat-label">Total Logged</span>
+                <span className="stat-value">{stats.total} / {MACHINES_TOTAL}</span>
+              </div>
+              <div className="progress-bar-container" style={{ marginBottom: '24px' }}>
+                <div className="progress-bar-fill" style={{ width: `${stats.percentage}%` }} />
+              </div>
+
+              <h3 className="section-title">Breakdown</h3>
+              <div className="stat-row">
+                <span className="stat-label">Verified</span>
+                <span className="stat-value" style={{ color: 'var(--verified)' }}>{stats.verified}</span>
+              </div>
+              <div className="stat-row">
+                <span className="stat-label">Failed</span>
+                <span className="stat-value" style={{ color: stats.failed > 0 ? 'var(--failed)' : 'inherit' }}>{stats.failed}</span>
+              </div>
+              <div className="stat-row">
+                <span className="stat-label">Bypass</span>
+                <span className="stat-value" style={{ color: stats.bypass > 0 ? 'var(--bypass)' : 'inherit' }}>{stats.bypass}</span>
+              </div>
+              
+              {isToday && stats.missing > 0 && (
+                <div style={{ marginTop: '24px', padding: '12px', backgroundColor: 'var(--failed-bg)', borderRadius: '8px' }}>
+                  <p style={{ margin: 0, fontSize: '13px', color: 'var(--failed)', fontWeight: 500 }}>
+                    {stats.missing} machine{stats.missing > 1 ? 's' : ''} pending verification.
+                  </p>
                 </div>
               )}
             </div>
-        </section>
-      )}
-
-      <section className="filters-bar">
-        <div style={styles.filterGroup}>
-          <label style={styles.filterLabel}>Date</label>
-          <input
-            type="date"
-            value={filterDate}
-            onChange={(e) => setFilterDate(e.target.value)}
-            style={styles.filterInput}
-          />
-        </div>
-        <div style={styles.filterGroup}>
-          <label style={styles.filterLabel}>EVK Status</label>
-          <select
-            value={filterEvk}
-            onChange={(e) => setFilterEvk(e.target.value)}
-            style={styles.filterInput}
-          >
-            <option value="all">All</option>
-            <option value="verified">Verified</option>
-            <option value="failed">Failed</option>
-            <option value="bypass">Bypass</option>
-          </select>
-        </div>
-        <div style={styles.filterGroup}>
-          <label style={styles.filterLabel}>Machine</label>
-          <select
-            value={filterMachine}
-            onChange={(e) => setFilterMachine(e.target.value)}
-            style={styles.filterInput}
-          >
-            <option value="all">All machines</option>
-            {machines.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.serial_number} &mdash; {m.location}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="filter-actions">
-          <button onClick={fetchData} style={styles.refreshBtn}>
-            Refresh
-          </button>
-          <button onClick={handleExport} style={styles.exportBtn} disabled={filteredReports.length === 0}>
-            Export .xlsx
-          </button>
-        </div>
-      </section>
-
-      <section className="table-section" aria-live="polite" aria-label="Daily reports table">
-        {loading ? (
-          <div style={styles.stateBox}>
-            <div className="spinner" />
-            <p style={styles.stateText}>Loading reports...</p>
           </div>
-        ) : filteredReports.length === 0 ? (
-          <div style={styles.stateBox}>
-            <p style={styles.stateHeading}>No reports found</p>
-            <p style={styles.stateText}>
-              {isToday
-                ? 'No technicians have submitted reports yet today.'
-                : 'No reports match the selected filters. Try a different date or clear the filters.'}
-            </p>
+
+          {/* Right Panel: Data Table */}
+          <div className="right-panel">
+            <div className="table-container">
+              <div className="filters-bar" style={{ padding: '24px' }}>
+                <div style={styles.filterGroup}>
+                  <label style={styles.filterLabel}>Date</label>
+                  <input
+                    type="date"
+                    value={filterDate}
+                    onChange={(e) => setFilterDate(e.target.value)}
+                    style={styles.filterInput}
+                  />
+                </div>
+                <div style={styles.filterGroup}>
+                  <Select
+                    label="EVK Status"
+                    value={filterEvk}
+                    onChange={setFilterEvk}
+                    options={[
+                      { value: 'all', label: 'All' },
+                      { value: 'verified', label: 'Verified' },
+                      { value: 'failed', label: 'Failed' },
+                      { value: 'bypass', label: 'Bypass' },
+                    ]}
+                  />
+                </div>
+                <div style={styles.filterGroup}>
+                  <Select
+                    label="Machine"
+                    value={filterMachine}
+                    onChange={setFilterMachine}
+                    options={[
+                      { value: 'all', label: 'All machines' },
+                      ...machines.map((m) => ({
+                        value: m.id,
+                        label: `${m.serial_number} — ${m.location}`,
+                      })),
+                    ]}
+                  />
+                </div>
+                <div className="filter-actions" style={{ marginLeft: 'auto', display: 'flex', gap: '12px' }}>
+                  <button onClick={fetchData} style={styles.refreshBtn}>
+                    Refresh
+                  </button>
+                  <button onClick={handleExport} style={{ ...styles.exportBtn, backgroundColor: 'var(--accent-blue)', color: 'var(--accent-blue-fg)' }} disabled={filteredReports.length === 0}>
+                    Export .xlsx
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ padding: '0 24px 24px', overflowX: 'auto' }}>
+                {loading ? (
+                  <div style={styles.stateBox}>
+                    <div className="spinner" />
+                    <p style={styles.stateText}>Loading reports...</p>
+                  </div>
+                ) : filteredReports.length === 0 ? (
+                  <div style={styles.stateBox}>
+                    <p style={styles.stateHeading}>No reports found</p>
+                    <p style={styles.stateText}>
+                      {isToday
+                        ? 'No technicians have submitted reports yet today.'
+                        : 'No reports match the selected filters. Try a different date or clear the filters.'}
+                    </p>
+                  </div>
+                ) : (
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead className="table-header">
+                      <tr>
+                        <th>Date</th>
+                        <th>Machine</th>
+                        <th>Model</th>
+                        <th>Location</th>
+                        <th>Technician</th>
+                        <th style={{ textAlign: 'right' }}>Sample Count</th>
+                        <th>EVK</th>
+                        <th>Failure Reason</th>
+                        <th>Time</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredReports.map((r) => (
+                        <tr key={r.id}>
+                          <td>{r.report_date}</td>
+                          <td style={styles.serialCell}>{r.machine_serial}</td>
+                          <td>{r.machine_model}</td>
+                          <td style={{ maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.machine_location}</td>
+                          <td>{r.technician_email}</td>
+                          <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.sample_count}</td>
+                          <td>
+                            <span style={{
+                              ...styles.evkBubble,
+                              ...(r.evk_status === 'verified' ? styles.evkVerified
+                                : r.evk_status === 'failed' ? styles.evkFailed
+                                : styles.evkBypass),
+                            }}>
+                              {r.evk_status}
+                            </span>
+                          </td>
+                          <td style={{ maxWidth: '180px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: r.verification_failure_reason ? 'var(--text-1)' : 'var(--text-4)' }}>
+                            {r.verification_failure_reason || '\u2014'}
+                          </td>
+                          <td style={{ fontSize: '12px', color: 'var(--text-3)' }}>
+                            {new Date(r.created_at).toLocaleTimeString('en-IN', {
+                              timeZone: 'Asia/Kolkata',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
           </div>
-        ) : (
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Machine</th>
-                <th>Model</th>
-                <th>Location</th>
-                <th>Technician</th>
-                <th>Sample Count</th>
-                <th>EVK</th>
-                <th>Failure Reason</th>
-                <th>Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredReports.map((r) => (
-                <tr key={r.id}>
-                  <td>{r.report_date}</td>
-                  <td style={styles.serialCell}>{r.machine_serial}</td>
-                  <td>{r.machine_model}</td>
-                  <td style={{ maxWidth: '200px' }}>{r.machine_location}</td>
-                  <td>{r.technician_email}</td>
-                  <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.sample_count}</td>
-                  <td>
-                    <span style={{
-                      ...styles.evkBubble,
-                      ...(r.evk_status === 'verified' ? styles.evkVerified
-                        : r.evk_status === 'failed' ? styles.evkFailed
-                        : styles.evkBypass),
-                    }}>
-                      {r.evk_status}
-                    </span>
-                  </td>
-                  <td style={{ maxWidth: '180px', color: r.verification_failure_reason ? 'var(--text-1)' : 'var(--text-4)' }}>
-                    {r.verification_failure_reason || '\u2014'}
-                  </td>
-                  <td style={{ fontSize: '12px', color: 'var(--text-3)' }}>
-                    {new Date(r.created_at).toLocaleTimeString('en-IN', {
-                      timeZone: 'Asia/Kolkata',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </section>
+        </div>
+      </main>
     </div>
   );
 }

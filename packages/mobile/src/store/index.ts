@@ -89,12 +89,12 @@ export const useStore = create<AppState>((set, get) => ({
     if (data) {
       set({ machines: data as Machine[] });
       const cacheData = data.map((m: Machine) => ({ id: m.id, data: JSON.stringify(m) }));
-      await db.cacheMachines(cacheData);
+      db.cacheMachines(cacheData);
     }
   },
 
   refreshPendingCount: async () => {
-    const count = await db.getPendingReportCount();
+    const count = await db.refreshPendingCount();
     set({ pendingCount: count });
   },
 

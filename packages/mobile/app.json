@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "gial-dsr",
-    "platforms": ["ios", "android"],
+    "platforms": ["ios", "android", "web"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.aahl.gialdsr"
@@ -15,6 +15,9 @@
     },
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "web": {
+      "bundler": "metro"
+    }
   }
 }

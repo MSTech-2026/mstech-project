@@ -4,13 +4,45 @@ import {
   Text,
   TextInput,
   FlatList,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
 } from 'react-native';
+import Animated, {
+  FadeInDown,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import { useStore } from '../store';
 import { Machine } from '../types';
 import { useNavigation } from '@react-navigation/native';
 import { colors } from './LoginScreen';
+
+function MachineCard({ item, index, onPress }: { item: Machine; index: number; onPress: () => void }) {
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  return (
+    <Animated.View entering={FadeInDown.delay(index * 50).duration(400)}>
+      <Pressable
+        onPressIn={() => { scale.value = withSpring(0.97, { damping: 15 }); }}
+        onPressOut={() => { scale.value = withSpring(1, { damping: 15 }); }}
+        onPress={onPress}
+      >
+        <Animated.View style={[styles.machineCard, animatedStyle]}>
+          <View style={styles.machineHeader}>
+            <Text style={styles.machineSerial}>{item.serial_number}</Text>
+            <Text style={styles.machineModel}>{item.model}</Text>
+          </View>
+          <Text style={styles.machineLocation}>{item.location}</Text>
+        </Animated.View>
+      </Pressable>
+    </Animated.View>
+  );
+}
 
 export function MachineListScreen() {
   const machines = useStore((s) => s.machines);
@@ -36,9 +68,20 @@ export function MachineListScreen() {
           </Text>
           <Text style={styles.siteName}>GIAL Guwahati, 29 machines</Text>
         </View>
-        <TouchableOpacity onPress={signOut} style={styles.logoutBtn}>
-          <Text style={styles.logout}>Sign out</Text>
-        </TouchableOpacity>
+        <Pressable onPress={signOut} style={styles.logoutBtn}>
+          {({ pressed }) => {
+            const scale = useSharedValue(1);
+            scale.value = withSpring(pressed ? 0.96 : 1, { damping: 15 });
+            const animatedStyle = useAnimatedStyle(() => ({
+              transform: [{ scale: scale.value }],
+            }));
+            return (
+              <Animated.View style={animatedStyle}>
+                <Text style={styles.logout}>Sign out</Text>
+              </Animated.View>
+            );
+          }}
+        </Pressable>
       </View>
 
       {pendingCount > 0 && (
@@ -66,18 +109,12 @@ export function MachineListScreen() {
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }: { item: Machine }) => (
-          <TouchableOpacity
-            style={styles.machineCard}
+        renderItem={({ item, index }: { item: Machine; index: number }) => (
+          <MachineCard
+            item={item}
+            index={index}
             onPress={() => navigation.navigate('ReportEntry', { machine: item })}
-            activeOpacity={0.7}
-          >
-            <View style={styles.machineHeader}>
-              <Text style={styles.machineSerial}>{item.serial_number}</Text>
-              <Text style={styles.machineModel}>{item.model}</Text>
-            </View>
-            <Text style={styles.machineLocation}>{item.location}</Text>
-          </TouchableOpacity>
+          />
         )}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
@@ -101,30 +138,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: colors.bg2,
+    padding: 24,
+    paddingTop: 64,
+    backgroundColor: colors.bg1,
     borderBottomWidth: 1,
     borderBottomColor: colors.borderDefault,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 8,
+    elevation: 2,
   },
   greeting: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text1,
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text0,
     textTransform: 'capitalize',
   },
   siteName: {
-    fontSize: 12,
-    color: colors.text3,
-    marginTop: 2,
+    fontSize: 13,
+    color: colors.text2,
+    marginTop: 4,
   },
   logoutBtn: {
     padding: 8,
   },
   logout: {
-    color: colors.text3,
-    fontSize: 13,
-    fontWeight: '500',
+    color: colors.text2,
+    fontSize: 14,
+    fontWeight: '600',
   },
   syncBanner: {
     backgroundColor: colors.warningBg,
@@ -141,11 +183,11 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   searchInput: {
-    backgroundColor: colors.bg2,
-    borderRadius: 6,
-    padding: 12,
-    fontSize: 14,
-    color: colors.text1,
+    backgroundColor: colors.bg1,
+    borderRadius: 12,
+    padding: 14,
+    fontSize: 15,
+    color: colors.text0,
     borderWidth: 1,
     borderColor: colors.borderDefault,
   },
@@ -163,12 +205,17 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   machineCard: {
-    backgroundColor: colors.bg2,
-    borderRadius: 8,
-    padding: 16,
-    marginTop: 8,
+    backgroundColor: colors.bg1,
+    borderRadius: 16,
+    padding: 20,
+    marginTop: 12,
     borderWidth: 1,
     borderColor: colors.borderDefault,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
+    elevation: 1,
   },
   machineHeader: {
     flexDirection: 'row',
@@ -177,20 +224,21 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   machineSerial: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.text1,
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text0,
     fontVariant: ['tabular-nums'],
   },
   machineModel: {
     fontSize: 11,
-    color: colors.accent,
+    color: colors.focus,
     backgroundColor: colors.accentSubtle,
     paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 4,
+    paddingVertical: 4,
+    borderRadius: 6,
     overflow: 'hidden',
-    fontWeight: '600',
+    fontWeight: '700',
+    textTransform: 'uppercase',
   },
   machineLocation: {
     fontSize: 13,
