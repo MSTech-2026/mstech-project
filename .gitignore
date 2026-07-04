@@ -11,12 +11,3 @@ android/
 *.log
 .DS_Store
 coverage/
-*.docx
-
-# Ignore commandcode and graphify outputs
-.commandcode/
-graphify-out/
-
-# Ignore all markdown and text files
-*.md
-*.txt

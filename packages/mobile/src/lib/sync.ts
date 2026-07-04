@@ -108,6 +108,6 @@ export async function submitReport(
     return { success: true, offline: false };
   }
 
-  db.insertPendingReport(report);
+  await db.insertPendingReport(report);
   return { success: true, offline: true };
 }

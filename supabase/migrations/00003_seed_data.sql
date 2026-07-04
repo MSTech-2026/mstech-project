@@ -13,40 +13,37 @@ DECLARE
 BEGIN
   SELECT id INTO gial_id FROM public.sites WHERE code = 'GIAL';
 
-  -- Passenger Terminal - Level 1 machines
+  -- Passenger & Cargo Terminal ETDs from provided list
   INSERT INTO public.machines (site_id, serial_number, model, location) VALUES
-    (gial_id, 'SN-ION-001', 'IONSCAN 500DT', 'Passenger Terminal - Check-in Area A'),
-    (gial_id, 'SN-ION-002', 'IONSCAN 500DT', 'Passenger Terminal - Check-in Area B'),
-    (gial_id, 'SN-ION-003', 'IONSCAN 500DT', 'Passenger Terminal - Check-in Area C'),
-    (gial_id, 'SN-ION-004', 'IONSCAN 500DT', 'Passenger Terminal - Security Hold Area 1'),
-    (gial_id, 'SN-ION-005', 'IONSCAN 500DT', 'Passenger Terminal - Security Hold Area 2'),
-    (gial_id, 'SN-ION-006', 'IONSCAN 500DT', 'Passenger Terminal - Boarding Gate 1-4'),
-    (gial_id, 'SN-ION-007', 'IONSCAN 500DT', 'Passenger Terminal - Boarding Gate 5-8'),
-    (gial_id, 'SN-ION-008', 'IONSCAN 500DT', 'Passenger Terminal - Transfer Desk'),
-    (gial_id, 'SN-ION-009', 'IONSCAN 500DT', 'Passenger Terminal - Baggage Make-up Area'),
-    (gial_id, 'SN-ION-010', 'IONSCAN 500DT', 'Passenger Terminal - Domestic Arrivals'),
-    (gial_id, 'SN-ION-011', 'IONSCAN 500DT', 'Passenger Terminal - International Arrivals'),
-    (gial_id, 'SN-ION-012', 'IONSCAN 500DT', 'Passenger Terminal - Mezzanine Level'),
-    (gial_id, 'SN-ION-013', 'IONSCAN 500DT', 'Passenger Terminal - Staff Entry Point'),
-    (gial_id, 'SN-ION-014', 'IONSCAN 500DT', 'Passenger Terminal - VIP Lounge Entry'),
-    (gial_id, 'SN-ION-015', 'IONSCAN 500DT', 'Passenger Terminal - Oversized Baggage'),
-    (gial_id, 'SN-ITM-001', 'Itemiser 4DX', 'Passenger Terminal - Check-in Area A'),
-    (gial_id, 'SN-ITM-002', 'Itemiser 4DX', 'Passenger Terminal - Check-in Area B'),
-    (gial_id, 'SN-ITM-003', 'Itemiser 4DX', 'Passenger Terminal - Security Hold 1'),
-    (gial_id, 'SN-ITM-004', 'Itemiser 4DX', 'Passenger Terminal - Security Hold 2'),
-    (gial_id, 'SN-ITM-005', 'Itemiser 4DX', 'Passenger Terminal - Boarding 1-4'),
-    (gial_id, 'SN-ITM-006', 'Itemiser 4DX', 'Passenger Terminal - Boarding 5-8'),
-    (gial_id, 'SN-ITM-007', 'Itemiser 4DX', 'Passenger Terminal - Domestic Arrivals'),
-    (gial_id, 'SN-ITM-008', 'Itemiser 4DX', 'Passenger Terminal - International Arrivals');
-
-  -- Cargo Terminal machines
-  INSERT INTO public.machines (site_id, serial_number, model, location) VALUES
-    (gial_id, 'SN-ION-016', 'IONSCAN 500DT', 'Cargo Terminal - Export Screening Bay 1'),
-    (gial_id, 'SN-ION-017', 'IONSCAN 500DT', 'Cargo Terminal - Export Screening Bay 2'),
-    (gial_id, 'SN-ION-018', 'IONSCAN 500DT', 'Cargo Terminal - Import Inspection'),
-    (gial_id, 'SN-ITM-009', 'Itemiser 4DX', 'Cargo Terminal - Export Bay 1'),
-    (gial_id, 'SN-ITM-010', 'Itemiser 4DX', 'Cargo Terminal - Export Bay 2'),
-    (gial_id, 'SN-ITM-011', 'Itemiser 4DX', 'Cargo Terminal - Import Bay');
+    (gial_id, 'D1120234771', 'Itemiser 4DX', 'T1-INTERNATIONAL'),
+    (gial_id, 'D1120234772', 'Itemiser 4DX', 'T2-New_Crash gate'),
+    (gial_id, 'D1120234773', 'Itemiser 4DX', 'T1-SHA 4'),
+    (gial_id, 'D0220244829', 'Itemiser 4DX', 'T1-SHA 3'),
+    (gial_id, 'D0220244830', 'Itemiser 4DX', 'T1-Dom_Dep'),
+    (gial_id, 'D1220244957', 'Itemiser 4DX', 'ASTI, CISF-Barr'),
+    (gial_id, 'D1220244958', 'Itemiser 4DX', 'T1-SHA 1'),
+    (gial_id, 'D1220244959', 'Itemiser 4DX', 'T1-BMA'),
+    (gial_id, 'D0320254990', 'Itemiser 4DX', 'T1-SHA 2'),
+    (gial_id, 'D0320254987', 'Itemiser 4DX', 'T1-Cargo Gate'),
+    (gial_id, 'D0320254993', 'Itemiser 4DX', 'T2-SHA 1'),
+    (gial_id, 'D0320254982', 'Itemiser 4DX', 'T2-SHA 4'),
+    (gial_id, 'D0320254977', 'Itemiser 4DX', 'T2-ARRIVAL STAFF GATE'),
+    (gial_id, 'D0320254986', 'Itemiser 4DX', 'T2-SHA 2'),
+    (gial_id, 'D0320254974', 'Itemiser 4DX', 'T2-OOG'),
+    (gial_id, 'D0320254975', 'Itemiser 4DX', 'T2-ATRS-1'),
+    (gial_id, 'D0320254976', 'Itemiser 4DX', 'T2-BMA'),
+    (gial_id, 'D0320254983', 'Itemiser 4DX', 'T1-AIRLINES 1'),
+    (gial_id, 'D0320254973', 'Itemiser 4DX', 'T2-MEZZANINE'),
+    (gial_id, 'D0320254984', 'Itemiser 4DX', 'T2-GOODS ENTRY GATE'),
+    (gial_id, 'D0320254981', 'Itemiser 4DX', 'T2-AIR SIDE ENTRY'),
+    (gial_id, 'D0320254979', 'Itemiser 4DX', 'T2-SHA 3'),
+    (gial_id, 'D0320254991', 'Itemiser 4DX', 'T2 - Vehicle Cargo gate'),
+    (gial_id, 'D0320254989', 'Itemiser 4DX', 'T2- Arr.Staff Gate'),
+    (gial_id, 'D0320254985', 'Itemiser 4DX', 'T2- Random'),
+    (gial_id, 'D0320254980', 'Itemiser 4DX', 'T2- SHA 5'),
+    (gial_id, 'D0320254992', 'Itemiser 4DX', 'T2- SHA 6'),
+    (gial_id, 'D0320254988', 'Itemiser 4DX', 'Null'),
+    (gial_id, 'D0320254978', 'Itemiser 4DX', 'T2- LEVEL 3');
 
 END $$;
 
@@ -62,7 +59,7 @@ BEGIN
     NEW.id,
     (SELECT id FROM public.sites WHERE code = 'GIAL' LIMIT 1),
     NEW.email,
-    'technician'
+    COALESCE(NEW.raw_app_meta_data->>'role', 'technician')
   );
   RETURN NEW;
 END;

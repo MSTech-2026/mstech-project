@@ -6,8 +6,7 @@ import { LoginScreen } from './src/screens/LoginScreen';
 import { MachineListScreen } from './src/screens/MachineListScreen';
 import { ReportEntryScreen } from './src/screens/ReportEntryScreen';
 import { useStore } from './src/store';
-import { startSyncListener, flushPendingQueue } from './src/lib/sync';
-import * as db from './src/lib/db';
+import { startSyncListener } from './src/lib/sync';
 import { supabase } from './src/lib/supabase';
 
 const Stack = createNativeStackNavigator();

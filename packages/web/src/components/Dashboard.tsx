@@ -2,9 +2,9 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { supabase } from '../lib/supabase';
-import { exportToExcel } from '../lib/excel';
-import { Profile, DailyReport, Machine } from '../types';
+import type { Profile, DailyReport, Machine } from '../types';
 import { Select } from './Select';
+import { MonthlyReport } from './MonthlyReport';
 
 interface DashboardProps {
   profile: Profile;
@@ -14,9 +14,11 @@ interface DashboardProps {
 const MACHINES_TOTAL = 29;
 
 export function Dashboard({ profile, onLogout }: DashboardProps) {
+  const [activeView, setActiveView] = useState<'daily' | 'monthly'>('daily');
   const [reports, setReports] = useState<DailyReport[]>([]);
   const [machines, setMachines] = useState<Machine[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0]);
   const [filterEvk, setFilterEvk] = useState<string>('all');
   const [filterMachine, setFilterMachine] = useState<string>('all');
@@ -27,6 +29,7 @@ export function Dashboard({ profile, onLogout }: DashboardProps) {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
 
     const query = supabase
       .from('daily_reports')
@@ -43,6 +46,12 @@ export function Dashboard({ profile, onLogout }: DashboardProps) {
       query,
       supabase.from('machines').select('*').eq('site_id', profile.site_id).eq('is_active', true),
     ]);
+
+    if (reportsRes.error || machinesRes.error) {
+      setError("Network failure. Please check your connection and try again.");
+      setLoading(false);
+      return;
+    }
 
     if (reportsRes.data) {
       const mapped = reportsRes.data.map((r: unknown) => {
@@ -88,7 +97,9 @@ export function Dashboard({ profile, onLogout }: DashboardProps) {
     return { total, verified, failed, bypass, missing, percentage: Math.round((total / MACHINES_TOTAL) * 100) };
   }, [reports]);
 
-  const handleExport = () => {
+  const handleExport = async () => {
+    // exception: lazy load for performance to split exceljs from main bundle
+    const { exportToExcel } = await import('../lib/excel');
     const filename = `GIAL-DSR-${filterDate || 'all'}.xlsx`;
     exportToExcel(filteredReports, filename);
   };
@@ -138,35 +149,60 @@ export function Dashboard({ profile, onLogout }: DashboardProps) {
         <div className="sidebar-header">
           <h1 className="sidebar-title">GIAL DSR</h1>
         </div>
-        <nav className="sidebar-nav">
-          <div className="nav-item active">Dashboard</div>
-          <div className="nav-item">Reports</div>
-          <div className="nav-item">Machines</div>
+        <nav className="sidebar-nav" aria-label="Main Navigation">
+          <div
+            role="button"
+            tabIndex={0}
+            className={`nav-item${activeView === 'daily' ? ' active' : ''}`}
+            onClick={() => setActiveView('daily')}
+            style={{ cursor: 'pointer' }}
+            aria-current={activeView === 'daily' ? 'page' : undefined}
+          >
+            Dashboard
+          </div>
+          <div
+            role="button"
+            tabIndex={0}
+            className={`nav-item${activeView === 'monthly' ? ' active' : ''}`}
+            onClick={() => setActiveView('monthly')}
+            style={{ cursor: 'pointer' }}
+            aria-current={activeView === 'monthly' ? 'page' : undefined}
+          >
+            Monthly Report
+          </div>
         </nav>
         <div className="sidebar-footer">
           <div className="user-info">
             <span className="user-email">{profile.email}</span>
             <span className="user-role">{profile.role.toUpperCase()}</span>
           </div>
-          <button onClick={onLogout} className="logout-btn" title="Sign out">&#x23FB;</button>
+          <button onClick={onLogout} className="logout-btn" title="Sign out" aria-label="Logout">&#x23FB;</button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="main-content">
+      <main className="main-content" id="main-content">
         <header className="top-bar">
           <div className="breadcrumb">
-            <span className="breadcrumb-active">Dashboard</span> / Today
+            <span className="breadcrumb-active">{activeView === 'daily' ? 'Dashboard' : 'Monthly Report'}</span>
+            {activeView === 'daily' && ' / Today'}
           </div>
           <div className="search-bar">
             <input type="text" placeholder="Search..." className="search-input" />
           </div>
         </header>
 
+        {activeView === 'monthly' ? (
+          <div className="content-body">
+            <div style={{ flex: 1, padding: '0' }}>
+              <MonthlyReport profile={profile} />
+            </div>
+          </div>
+        ) : (
         <div className="content-body">
           {/* Left Panel: Context/Stats */}
           <div className="left-panel">
-            <div className="profile-card">
+            <div className="profile-card" aria-live="polite">
               <div className="profile-header">
                 <div className="profile-avatar">
                   {profile.email.charAt(0).toUpperCase()}
@@ -215,7 +251,7 @@ export function Dashboard({ profile, onLogout }: DashboardProps) {
 
           {/* Right Panel: Data Table */}
           <div className="right-panel">
-            <div className="table-container">
+            <div className="table-container" aria-live="polite">
               <div className="filters-bar" style={{ padding: '24px' }}>
                 <div style={styles.filterGroup}>
                   <label style={styles.filterLabel}>Date</label>
@@ -264,7 +300,13 @@ export function Dashboard({ profile, onLogout }: DashboardProps) {
               </div>
 
               <div style={{ padding: '0 24px 24px', overflowX: 'auto' }}>
-                {loading ? (
+                {error ? (
+                  <div style={styles.stateBox}>
+                    <p style={styles.stateHeading}>Connection Error</p>
+                    <p style={styles.stateText}>{error}</p>
+                    <button onClick={fetchData} style={{ ...styles.refreshBtn, marginTop: '16px' }}>Retry</button>
+                  </div>
+                ) : loading ? (
                   <div style={styles.stateBox}>
                     <div className="spinner" />
                     <p style={styles.stateText}>Loading reports...</p>
@@ -315,7 +357,7 @@ export function Dashboard({ profile, onLogout }: DashboardProps) {
                           <td style={{ maxWidth: '180px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: r.verification_failure_reason ? 'var(--text-1)' : 'var(--text-4)' }}>
                             {r.verification_failure_reason || '\u2014'}
                           </td>
-                          <td style={{ fontSize: '12px', color: 'var(--text-3)' }}>
+                          <td style={{ fontSize: '13px', color: 'var(--text-3)' }}>
                             {new Date(r.created_at).toLocaleTimeString('en-IN', {
                               timeZone: 'Asia/Kolkata',
                               hour: '2-digit',
@@ -331,6 +373,7 @@ export function Dashboard({ profile, onLogout }: DashboardProps) {
             </div>
           </div>
         </div>
+        )}
       </main>
     </div>
   );

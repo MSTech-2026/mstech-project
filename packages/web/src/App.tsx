@@ -7,24 +7,27 @@ import { Dashboard } from './components/Dashboard';
 export function App() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sessionExpired, setSessionExpired] = useState(false);
+
   useEffect(() => {
     checkSession();
   }, []);
 
   const checkSession = async () => {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    if (error) {
-      setLoading(false);
-      return;
-    }
-    if (user) {
-      const { data: prof } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      if (prof && ['admin', 'sysadmin'].includes(prof.role)) {
-        setProfile(prof as Profile);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user) {
+        setSessionExpired(true);
+      } else {
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        if (prof && ['admin', 'sysadmin'].includes(prof.role)) {
+          setProfile(prof as Profile);
+        }
       }
     }
     setLoading(false);
@@ -44,8 +47,18 @@ export function App() {
   }
 
   if (!profile) {
-    return <Login onLogin={handleLogin} />;
+    return (
+      <>
+        <a href="#main-content" className="skip-link">Skip to main content</a>
+        <Login onLogin={handleLogin} initialError={sessionExpired ? 'Session expired. Please log in again.' : undefined} />
+      </>
+    );
   }
 
-  return <Dashboard profile={profile} onLogout={handleLogout} />;
+  return (
+    <>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
+      <Dashboard profile={profile} onLogout={handleLogout} />
+    </>
+  );
 }

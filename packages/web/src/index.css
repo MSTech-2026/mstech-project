@@ -25,7 +25,7 @@
   --border-strong: #CBD5E1;
 
   --text-0: #111827;
-  --text-1: #475569;
+  --text-1: #334155;
   --text-2: #94A3B8;
   --text-3: #CBD5E1;
 
@@ -93,6 +93,36 @@ body {
   font-size: 14px;
   line-height: 1.5;
 }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--accent);
+  color: var(--accent-fg);
+  padding: 8px 16px;
+  z-index: 100;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 8px 0;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: 600;
@@ -139,6 +169,7 @@ select,
 button[aria-haspopup="listbox"] {
   cursor: pointer;
   font-family: var(--font-body);
+}
 
 button[aria-haspopup="listbox"]:focus-visible {
   border-color: var(--accent);
@@ -537,4 +568,50 @@ button:disabled {
     padding: 0;
     margin-left: auto;
   }
+  
+  .pivot-table, .pivot-table tbody, .pivot-table tr, .pivot-table td {
+    display: block;
+    width: 100%;
+  }
+  .pivot-table thead {
+    display: none;
+  }
+  .pivot-table tr {
+    margin-bottom: 16px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    background-color: var(--bg-1);
+    overflow: hidden;
+  }
+  .pivot-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 12px 16px;
+    text-align: right;
+  }
+  .pivot-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-2);
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+}
+
+/* Phone: 480px */
+@media (max-width: 480px) {
+  .top-bar {
+    padding: 0 16px;
+  }
+  .content-body {
+    padding: 16px;
+  }
+  .stat-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
 }

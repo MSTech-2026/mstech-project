@@ -4,12 +4,13 @@ import { Profile } from '../types';
 
 interface LoginProps {
   onLogin: (profile: Profile) => void;
+  initialError?: string;
 }
 
-export function Login({ onLogin }: LoginProps) {
+export function Login({ onLogin, initialError }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = useState(initialError || '');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,7 +79,7 @@ export function Login({ onLogin }: LoginProps) {
           />
         </div>
 
-        {error && <p style={styles.error}>Error: {error}</p>}
+        {error && <p style={styles.error} role="alert"><span className="sr-only">Error: </span>{error}</p>}
 
         <button type="submit" disabled={loading} style={styles.button}>
           {loading ? 'Signing in...' : 'Sign in'}
@@ -98,10 +99,9 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '24px',
   },
   card: {
-    backgroundColor: 'var(--bg-1)',
-    padding: '48px 40px',
-    borderRadius: '16px',
-    boxShadow: 'var(--shadow-sm)',
+    backgroundColor: 'var(--bg-2)',
+    padding: '36px 40px',
+    borderRadius: '10px',
     width: '100%',
     maxWidth: '380px',
     border: '1px solid var(--border-default)',
@@ -138,8 +138,8 @@ const styles: Record<string, React.CSSProperties> = {
   input: {
     width: '100%',
     padding: '10px 12px',
-    backgroundColor: 'var(--bg-2)',
-    border: '1px solid var(--border-subtle)',
+    backgroundColor: 'var(--bg-1)',
+    border: '1px solid var(--border-default)',
     borderRadius: '6px',
     fontSize: '14px',
     color: 'var(--text-1)',
@@ -156,8 +156,8 @@ const styles: Record<string, React.CSSProperties> = {
   button: {
     width: '100%',
     padding: '11px',
-    backgroundColor: 'var(--accent-blue)',
-    color: 'var(--accent-blue-fg)',
+    backgroundColor: 'var(--accent)',
+    color: 'var(--accent-fg)',
     border: 'none',
     borderRadius: '6px',
     fontSize: '14px',

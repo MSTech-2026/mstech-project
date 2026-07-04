@@ -73,19 +73,12 @@ USING (public.get_current_role() = 'sysadmin')
 WITH CHECK (public.get_current_role() = 'sysadmin');
 
 -- Allow inserting new profiles (for signup flow)
--- Note: Profile creation is handled by the handle_new_user() trigger,
--- not by direct API calls. This policy validates that any direct INSERT
--- cannot set role=sysadmin or role=admin through the API.
 DROP POLICY IF EXISTS "Insert own profile on signup" ON public.profiles;
 CREATE POLICY "Insert own profile on signup"
 ON public.profiles
 FOR INSERT
 TO authenticated
-WITH CHECK (
-  id = auth.uid()
-  AND role = 'technician'
-  AND site_id IS NOT NULL
-);
+WITH CHECK (id = auth.uid());
 
 -- ============================================================================
 -- MACHINES TABLE POLICIES

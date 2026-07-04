@@ -4,45 +4,13 @@ import {
   Text,
   TextInput,
   FlatList,
-  Pressable,
+  TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import Animated, {
-  FadeInDown,
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated';
 import { useStore } from '../store';
 import { Machine } from '../types';
 import { useNavigation } from '@react-navigation/native';
 import { colors } from './LoginScreen';
-
-function MachineCard({ item, index, onPress }: { item: Machine; index: number; onPress: () => void }) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  return (
-    <Animated.View entering={FadeInDown.delay(index * 50).duration(400)}>
-      <Pressable
-        onPressIn={() => { scale.value = withSpring(0.97, { damping: 15 }); }}
-        onPressOut={() => { scale.value = withSpring(1, { damping: 15 }); }}
-        onPress={onPress}
-      >
-        <Animated.View style={[styles.machineCard, animatedStyle]}>
-          <View style={styles.machineHeader}>
-            <Text style={styles.machineSerial}>{item.serial_number}</Text>
-            <Text style={styles.machineModel}>{item.model}</Text>
-          </View>
-          <Text style={styles.machineLocation}>{item.location}</Text>
-        </Animated.View>
-      </Pressable>
-    </Animated.View>
-  );
-}
 
 export function MachineListScreen() {
   const machines = useStore((s) => s.machines);
@@ -68,20 +36,9 @@ export function MachineListScreen() {
           </Text>
           <Text style={styles.siteName}>GIAL Guwahati, 29 machines</Text>
         </View>
-        <Pressable onPress={signOut} style={styles.logoutBtn}>
-          {({ pressed }) => {
-            const scale = useSharedValue(1);
-            scale.value = withSpring(pressed ? 0.96 : 1, { damping: 15 });
-            const animatedStyle = useAnimatedStyle(() => ({
-              transform: [{ scale: scale.value }],
-            }));
-            return (
-              <Animated.View style={animatedStyle}>
-                <Text style={styles.logout}>Sign out</Text>
-              </Animated.View>
-            );
-          }}
-        </Pressable>
+        <TouchableOpacity onPress={signOut} style={styles.logoutBtn}>
+          <Text style={styles.logout}>Sign out</Text>
+        </TouchableOpacity>
       </View>
 
       {pendingCount > 0 && (
@@ -99,8 +56,6 @@ export function MachineListScreen() {
           placeholderTextColor={colors.text4}
           value={search}
           onChangeText={setSearch}
-          accessibilityLabel="Search machines"
-          accessibilityHint="Search by serial number, location, or model"
         />
       </View>
 
@@ -109,12 +64,18 @@ export function MachineListScreen() {
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
-        renderItem={({ item, index }: { item: Machine; index: number }) => (
-          <MachineCard
-            item={item}
-            index={index}
+        renderItem={({ item }: { item: Machine }) => (
+          <TouchableOpacity
+            style={styles.machineCard}
             onPress={() => navigation.navigate('ReportEntry', { machine: item })}
-          />
+            activeOpacity={0.7}
+          >
+            <View style={styles.machineHeader}>
+              <Text style={styles.machineSerial}>{item.serial_number}</Text>
+              <Text style={styles.machineModel}>{item.model}</Text>
+            </View>
+            <Text style={styles.machineLocation}>{item.location}</Text>
+          </TouchableOpacity>
         )}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
@@ -138,35 +99,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 24,
-    paddingTop: 64,
-    backgroundColor: colors.bg1,
+    padding: 20,
+    paddingTop: 60,
+    backgroundColor: colors.bg2,
     borderBottomWidth: 1,
     borderBottomColor: colors.borderDefault,
-    shadowColor: colors.accent,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.02,
-    shadowRadius: 8,
-    elevation: 2,
   },
   greeting: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.text0,
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text1,
     textTransform: 'capitalize',
   },
   siteName: {
-    fontSize: 13,
-    color: colors.text2,
-    marginTop: 4,
+    fontSize: 12,
+    color: colors.text3,
+    marginTop: 2,
   },
   logoutBtn: {
     padding: 8,
   },
   logout: {
-    color: colors.text2,
-    fontSize: 14,
-    fontWeight: '600',
+    color: colors.text3,
+    fontSize: 13,
+    fontWeight: '500',
   },
   syncBanner: {
     backgroundColor: colors.warningBg,
@@ -183,11 +139,11 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   searchInput: {
-    backgroundColor: colors.bg1,
-    borderRadius: 12,
-    padding: 14,
-    fontSize: 15,
-    color: colors.text0,
+    backgroundColor: colors.bg2,
+    borderRadius: 6,
+    padding: 12,
+    fontSize: 14,
+    color: colors.text1,
     borderWidth: 1,
     borderColor: colors.borderDefault,
   },
@@ -205,17 +161,12 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   machineCard: {
-    backgroundColor: colors.bg1,
-    borderRadius: 16,
-    padding: 20,
-    marginTop: 12,
+    backgroundColor: colors.bg2,
+    borderRadius: 8,
+    padding: 16,
+    marginTop: 8,
     borderWidth: 1,
     borderColor: colors.borderDefault,
-    shadowColor: colors.accent,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    elevation: 1,
   },
   machineHeader: {
     flexDirection: 'row',
@@ -224,21 +175,20 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   machineSerial: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.text0,
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text1,
     fontVariant: ['tabular-nums'],
   },
   machineModel: {
     fontSize: 11,
-    color: colors.focus,
+    color: colors.accent,
     backgroundColor: colors.accentSubtle,
     paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingVertical: 3,
+    borderRadius: 4,
     overflow: 'hidden',
-    fontWeight: '700',
-    textTransform: 'uppercase',
+    fontWeight: '600',
   },
   machineLocation: {
     fontSize: 13,

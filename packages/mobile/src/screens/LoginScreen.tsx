@@ -3,17 +3,12 @@ import {
   View,
   Text,
   TextInput,
-  Pressable,
+  TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated';
 import { supabase } from '../lib/supabase';
 import { useStore } from '../store';
 
@@ -81,7 +76,6 @@ export function LoginScreen() {
             autoCapitalize="none"
             keyboardType="email-address"
             autoCorrect={false}
-            accessibilityLabel="Email address"
           />
           <Text style={styles.label}>Password</Text>
           <TextInput
@@ -91,39 +85,22 @@ export function LoginScreen() {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
-            accessibilityLabel="Password"
           />
 
           {error ? <Text style={styles.error}>Error: {error}</Text> : null}
 
-          <Pressable
+          <TouchableOpacity
+            style={[styles.button, loading && styles.buttonDisabled]}
             onPress={handleLogin}
             disabled={loading}
+            activeOpacity={0.7}
           >
-            {({ pressed }) => {
-              const scale = useSharedValue(1);
-              scale.value = withSpring(pressed ? 0.96 : 1, { damping: 15 });
-              const animatedStyle = useAnimatedStyle(() => ({
-                transform: [{ scale: scale.value }],
-              }));
-
-              return (
-                <Animated.View
-                  style={[
-                    styles.button,
-                    loading && styles.buttonDisabled,
-                    animatedStyle,
-                  ]}
-                >
-                  {loading ? (
-                    <ActivityIndicator color={colors.accentFg} />
-                  ) : (
-                    <Text style={styles.buttonText}>Sign In</Text>
-                  )}
-                </Animated.View>
-              );
-            }}
-          </Pressable>
+            {loading ? (
+              <ActivityIndicator color={colors.accentFg} />
+            ) : (
+              <Text style={styles.buttonText}>Sign in</Text>
+            )}
+          </TouchableOpacity>
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -131,37 +108,37 @@ export function LoginScreen() {
 }
 
 export const colors = {
-  bg0: '#F8FAFC',          // Light background
-  bg1: '#FFFFFF',          // Card background / inputs
-  bg2: '#F1F5F9',          // Shaded background (secondary surface)
-  bg3: '#E2E8F0',          // Accent shade surface
-  bg4: '#CBD5E1',          // Stronger gray surface
-  borderSubtle: '#F1F5F9',
-  borderDefault: '#E2E8F0',
-  borderStrong: '#CBD5E1',
-  text0: '#111827',        // Primary text
-  text1: '#475569',        // Secondary text
-  text2: '#64748B',        // Steel gray / info
-  text3: '#94A3B8',        // Muted text
-  text4: '#CBD5E1',
-  accent: '#0F1B4C',        // Midnight Blue
-  accentHover: '#142A73',
-  accentActive: '#0A1336',
-  accentSubtle: '#EEF2FF',  // Hover background
-  accentFg: '#FFFFFF',
-  focus: '#2563EB',
-  verified: '#22C55E',      // Brand success
-  verifiedBg: '#DCFCE7',
-  verifiedFg: '#15803D',
-  failed: '#EF4444',        // Brand error
-  failedBg: '#FEE2E2',
-  failedFg: '#B91C1C',
-  bypass: '#F59E0B',        // Brand warning
-  bypassBg: '#FEF3C7',
-  bypassFg: '#B45309',
-  warning: '#F59E0B',
-  warningBg: '#FEF3C7',
-  warningFg: '#B45309',
+  bg0: '#171412',
+  bg1: '#1e1b18',
+  bg2: '#272320',
+  bg3: '#302b27',
+  bg4: '#3d3732',
+  borderSubtle: '#302b27',
+  borderDefault: '#3d3732',
+  borderStrong: '#524b44',
+  text0: '#f2efec',
+  text1: '#dbd5cf',
+  text2: '#b3aaa0',
+  text3: '#8c8278',
+  text4: '#6b6158',
+  accent: '#d4940a',
+  accentHover: '#e0a820',
+  accentActive: '#b87e08',
+  accentSubtle: '#302510',
+  accentFg: '#171412',
+  focus: '#d4940a',
+  verified: '#3daa6d',
+  verifiedBg: '#1a3328',
+  verifiedFg: '#b8eacc',
+  failed: '#d44a3a',
+  failedBg: '#331a16',
+  failedFg: '#ecc8c3',
+  bypass: '#b89a3d',
+  bypassBg: '#332a16',
+  bypassFg: '#ece0c3',
+  warning: '#d4a43d',
+  warningBg: '#332a16',
+  warningFg: '#171412',
 };
 
 const styles = StyleSheet.create({
@@ -190,39 +167,34 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   formCard: {
-    backgroundColor: colors.bg1,
-    borderRadius: 16,
-    padding: 32,
+    backgroundColor: colors.bg2,
+    borderRadius: 10,
+    padding: 24,
     borderWidth: 1,
     borderColor: colors.borderDefault,
-    shadowColor: colors.accent,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
-    elevation: 3,
   },
   label: {
-    fontSize: 12,
-    color: colors.text1,
-    marginBottom: 8,
+    fontSize: 11,
+    color: colors.text3,
+    marginBottom: 6,
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   input: {
-    backgroundColor: colors.bg0,
-    borderRadius: 8,
-    padding: 14,
+    backgroundColor: colors.bg1,
+    borderRadius: 6,
+    padding: 12,
     fontSize: 15,
-    color: colors.text0,
-    marginBottom: 20,
+    color: colors.text1,
+    marginBottom: 16,
     borderWidth: 1,
     borderColor: colors.borderDefault,
   },
   button: {
     backgroundColor: colors.accent,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 6,
+    padding: 14,
     alignItems: 'center',
     marginTop: 8,
   },
@@ -232,13 +204,12 @@ const styles = StyleSheet.create({
   buttonText: {
     color: colors.accentFg,
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   error: {
     color: colors.failed,
     fontSize: 13,
-    marginBottom: 16,
+    marginBottom: 12,
     textAlign: 'center',
-    fontWeight: '500',
   },
 });

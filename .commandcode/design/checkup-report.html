@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkup Report — GIAL DSR Admin Portal</title>
+  <style>
+    :root {
+      --bg: oklch(0.14 0.01 260);
+      --surface: oklch(0.18 0.01 260);
+      --border: oklch(0.26 0.008 260);
+      --text: oklch(0.88 0.006 70);
+      --muted: oklch(0.58 0.01 70);
+      --accent: oklch(0.58 0.16 250);
+      --fail: oklch(0.58 0.20 25);
+      --warn: oklch(0.72 0.14 65);
+      --pass: oklch(0.58 0.14 155);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', system-ui, sans-serif; line-height: 1.6; padding: 48px 32px; max-width: 900px; margin: 0 auto; }
+    h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+    .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 40px; }
+    .score-box { display: flex; align-items: center; gap: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 32px; margin-bottom: 40px; }
+    .score-num { font-size: 48px; font-weight: 800; color: var(--warn); }
+    .score-label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+    .score-verdict { font-size: 14px; color: var(--muted); margin-top: 4px; }
+    h2 { font-size: 18px; font-weight: 700; margin: 40px 0 16px; }
+    h3 { font-size: 14px; font-weight: 600; margin: 24px 0 8px; }
+    p { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .tag-healthy { background: oklch(0.3 0.06 155); color: oklch(0.85 0.06 155); }
+    .tag-watch { background: oklch(0.35 0.06 65); color: oklch(0.85 0.06 65); }
+    .tag-critical { background: oklch(0.3 0.08 25); color: oklch(0.85 0.08 25); }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+    th { text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+    td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid oklch(0.16 0.006 260); }
+    .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .bar-label { width: 120px; font-size: 13px; color: var(--text); font-weight: 500; }
+    .bar-track { flex: 1; height: 6px; background: oklch(0.22 0.008 260); border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 3px; }
+    .bar-fill-healthy { background: var(--pass); }
+    .bar-fill-watch { background: var(--warn); }
+    .bar-fill-critical { background: var(--fail); }
+    .bar-score { width: 40px; font-size: 13px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+    .rx { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; margin-bottom: 12px; }
+    .rx h3 { margin-top: 0; }
+    code { background: oklch(0.22 0.006 260); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: oklch(0.8 0.04 260); }
+  </style>
+</head>
+<body>
+
+<h1>Checkup Report</h1>
+<p class="subtitle">GIAL DSR Admin Portal — 2026-07-04 — Post-rebuild</p>
+
+<div class="score-box">
+  <div class="score-num">40/60</div>
+  <div>
+    <div class="score-label">WATCH WITH CRITICAL ACCESSIBILITY</div>
+    <div class="score-verdict">Safe to demo. Not safe to ship. Fix P1 (accessibility) and run shadow logging before production.</div>
+  </div>
+</div>
+
+<h2>Vital Signs</h2>
+
+<div class="bar-row">
+  <span class="bar-label">Intentionality</span>
+  <div class="bar-track"><div class="bar-fill bar-fill-healthy" style="width:80%"></div></div>
+  <span class="bar-score">8/10</span>
+</div>
+<div class="bar-row">
+  <span class="bar-label">Readability</span>
+  <div class="bar-track"><div class="bar-fill bar-fill-watch" style="width:50%"></div></div>
+  <span class="bar-score">5/10</span>
+</div>
+<div class="bar-row">
+  <span class="bar-label">Usability</span>
+  <div class="bar-track"><div class="bar-fill bar-fill-healthy" style="width:80%"></div></div>
+  <span class="bar-score">8/10</span>
+</div>
+<div class="bar-row">
+  <span class="bar-label">Responsiveness</span>
+  <div class="bar-track"><div class="bar-fill bar-fill-watch" style="width:30%"></div></div>
+  <span class="bar-score">3/10</span>
+</div>
+<div class="bar-row">
+  <span class="bar-label">Speed</span>
+  <div class="bar-track"><div class="bar-fill bar-fill-watch" style="width:50%"></div></div>
+  <span class="bar-score">5/10</span>
+</div>
+<div class="bar-row">
+  <span class="bar-label">Accessibility</span>
+  <div class="bar-track"><div class="bar-fill bar-fill-critical" style="width:10%"></div></div>
+  <span class="bar-score">1/10</span>
+</div>
+
+<h2>Detailed Findings</h2>
+
+<table>
+  <thead><tr><th>Vital</th><th>Score</th><th>Status</th><th>Evidence</th></tr></thead>
+  <tbody>
+    <tr><td>Intentionality</td><td>8/10</td><td><span class="tag tag-healthy">HEALTHY</span></td><td>Brand palette, defined shadows, Inter/Poppil pairing, structured layout. Not Tailwind defaults.</td></tr>
+    <tr><td>Readability</td><td>5/10</td><td><span class="tag tag-watch">WATCH</span></td><td>Light mode text-1 (#475569) is borderline AA. Table cells at 12px below body baseline.</td></tr>
+    <tr><td>Usability</td><td>8/10</td><td><span class="tag tag-healthy">HEALTHY</span></td><td>Core flow completable. Login, dashboard, monthly report, export all function.</td></tr>
+    <tr><td>Responsiveness</td><td>3/10</td><td><span class="tag tag-watch">WATCH</span></td><td>No mobile breakpoints below 1024px. Monthly pivot (29x31) will overflow heavily on phones.</td></tr>
+    <tr><td>Speed</td><td>5/10</td><td><span class="tag tag-watch">WATCH</span></td><td>exceljs and file-saver in main bundle. ~150KB unused on initial load.</td></tr>
+    <tr><td>Accessibility</td><td>1/10</td><td><span class="tag tag-critical">CRITICAL</span></td><td>No aria-labels on icon buttons. No aria-live. No skip-to-content. Color-only error states.</td></tr>
+  </tbody>
+</table>
+
+<h2>Prescriptions</h2>
+
+<div class="rx">
+  <h3>P1. Accessibility <span class="tag tag-critical">CRITICAL</span></h3>
+  <p><strong>What:</strong> Logout button is emoji-only. Sidebar nav has no semantic role. Hero stat updates silently. No skip-to-content.</p>
+  <p><strong>Why:</strong> Airport security tool, BCAS audit likely includes accessibility. Keyboard-only and screen-reader users cannot operate.</p>
+  <p><strong>Fix:</strong> <code>/design interaction</code> — add aria-labels, aria-live regions, skip-to-content link.</p>
+</div>
+
+<div class="rx">
+  <h3>P2. Responsiveness <span class="tag tag-watch">WATCH</span></h3>
+  <p><strong>What:</strong> No mobile breakpoints below 1024px. Monthly pivot overflows on phones.</p>
+  <p><strong>Why:</strong> CSO may open monthly report on iPad before board meeting.</p>
+  <p><strong>Fix:</strong> <code>/design responsive</code> — add 768px and 480px breakpoints. Consider stacked card view for monthly on phones.</p>
+</div>
+
+<div class="rx">
+  <h3>P3. Speed <span class="tag tag-watch">WATCH</span></h3>
+  <p><strong>What:</strong> exceljs and file-saver in main bundle despite only being needed on Export click.</p>
+  <p><strong>Why:</strong> 150KB is meaningful on slow cargo-terminal connections.</p>
+  <p><strong>Fix:</strong> Dynamic import of <code>excel.ts</code> inside the export handler.</p>
+</div>
+
+<div class="rx">
+  <h3>P4. Readability <span class="tag tag-watch">WATCH</span></h3>
+  <p><strong>What:</strong> Light mode text contrast borderline. 12px text in tables.</p>
+  <p><strong>Why:</strong> Aging workforce, 8-hour shifts. WCAG AAA target for body text.</p>
+  <p><strong>Fix:</strong> <code>/design recolor</code> — deepen text-1 from #475569 to #334155.</p>
+</div>
+
+<h2>Verdict</h2>
+<p>The interface has crossed from "looks generated" to "looks intentional." Safe to demo. Not safe to ship without fixing accessibility and running a shadow logging period.</p>
+
+</body>
+</html>
