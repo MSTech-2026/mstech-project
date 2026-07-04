@@ -15,3 +15,5 @@ coverage/
 *.txt
 *.docx
 !README.md
+.commandcode/
+graphify-out/
