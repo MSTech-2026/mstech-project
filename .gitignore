@@ -11,3 +11,7 @@ android/
 *.log
 .DS_Store
 coverage/
+*.md
+*.txt
+*.docx
+!README.md
