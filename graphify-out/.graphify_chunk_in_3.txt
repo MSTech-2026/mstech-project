@@ -1,1 +1,0 @@
-/home/sumeet/MSTech/packages/web/public/favicon.svg
