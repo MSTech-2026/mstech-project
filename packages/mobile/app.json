@@ -17,8 +17,7 @@
       "expo-secure-store"
     ],
     "web": {
-      "bundler": "metro",
-      "favicon": "./assets/favicon.png"
+      "bundler": "metro"
     }
   }
 }

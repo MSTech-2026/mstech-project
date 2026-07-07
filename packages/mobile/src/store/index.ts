@@ -94,7 +94,7 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   refreshPendingCount: async () => {
-    const count = await db.getPendingReportCount();
+    const count = await db.refreshPendingCount();
     set({ pendingCount: count });
   },
 
