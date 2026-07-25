@@ -46,6 +46,7 @@ export interface PendingReport {
   status: 'pending' | 'synced' | 'failed';
   error_message?: string;
   created_at: string;
+  synced_at?: string;
 }
 
 export interface MachineCompliance {

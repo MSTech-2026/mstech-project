@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-07-12T00:58:08.414Z",
+  "projectRoot": "/home/sumeet/MSTech/packages/mobile",
+  "structure": {
+    "hasPackageJson": true,
+    "hasTsConfig": true,
+    "hasClaudeConfig": true,
+    "hasClaudeFlow": true
+  },
+  "scannedAt": 1783817888414
+}

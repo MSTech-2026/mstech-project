@@ -4,14 +4,20 @@
     "slug": "gial-dsr-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "scheme": "gial-dsr",
+    "entryPoint": "./index.js",
     "platforms": ["ios", "android", "web"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.aahl.gialdsr"
     },
     "android": {
-      "package": "com.aahl.gialdsr"
+      "package": "com.aahl.gialdsr",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#18130a"
+      }
     },
     "plugins": [
       "expo-secure-store"

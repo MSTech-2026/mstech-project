@@ -7,10 +7,13 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useStore } from '../store';
 import { Machine } from '../types';
 import { useNavigation } from '@react-navigation/native';
-import { colors } from './LoginScreen';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors, typography, spacing, radii } from '../theme';
+import { Atmosphere } from '../components/Atmosphere';
 
 export function MachineListScreen() {
   const machines = useStore((s) => s.machines);
@@ -19,6 +22,8 @@ export function MachineListScreen() {
   const signOut = useStore((s) => s.signOut);
   const navigation = useNavigation<any>();
   const [search, setSearch] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const filtered = machines.filter(
     (m) =>
@@ -27,55 +32,104 @@ export function MachineListScreen() {
       m.model.toLowerCase().includes(search.toLowerCase())
   );
 
+  const siteName = 'GIAL Guwahati';
+  const siteCount = machines.length;
+
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View>
+      <Atmosphere />
+      <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
+        <MaterialIcons name="factory" size={24} color={colors.primary} style={styles.headerIcon} />
+        <View style={styles.headerTitles}>
+          <Text style={styles.brand}>GIAL DSR</Text>
           <Text style={styles.greeting}>
             {profile ? profile.email.split('@')[0] : 'Technician'}
           </Text>
-          <Text style={styles.siteName}>GIAL Guwahati, 29 machines</Text>
         </View>
-        <TouchableOpacity onPress={signOut} style={styles.logoutBtn}>
+        <TouchableOpacity
+          onPress={signOut}
+          style={styles.logoutBtn}
+          accessibilityRole="button"
+          accessibilityLabel="Sign out"
+        >
+          <MaterialIcons name="logout" size={18} color={colors.onSurfaceVariant} style={styles.logoutIcon} />
           <Text style={styles.logout}>Sign out</Text>
         </TouchableOpacity>
       </View>
 
       {pendingCount > 0 && (
         <View style={styles.syncBanner}>
+          <MaterialIcons name="cloud-upload" size={16} color={colors.onError} style={styles.syncIcon} />
           <Text style={styles.syncText}>
             {pendingCount} report{pendingCount > 1 ? 's' : ''} saved offline, will sync automatically
           </Text>
         </View>
       )}
 
-      <View style={styles.searchWrap}>
+      <View style={styles.secondaryHeader}>
+        <View style={styles.secondaryHeaderText}>
+          <Text style={styles.siteName}>{siteName}, {siteCount} machines</Text>
+          <Text style={styles.siteMeta}>Operational Fleet Status</Text>
+        </View>
+      </View>
+
+      <View style={[styles.searchWrap, searchFocused && styles.searchWrapFocused]}>
+        <MaterialIcons
+          name="search"
+          size={20}
+          color={searchFocused ? colors.primary : colors.text3}
+          style={styles.searchIcon}
+        />
         <TextInput
           style={styles.searchInput}
           placeholder="Search serial, location, or model..."
           placeholderTextColor={colors.text4}
           value={search}
           onChangeText={setSearch}
+          onFocus={() => setSearchFocused(true)}
+          onBlur={() => setSearchFocused(false)}
+          accessibilityLabel="Search machines"
+          accessibilityHint="Type to filter machines by serial number, location, or model"
         />
       </View>
 
-      <Text style={styles.countText}>{filtered.length} machine{filtered.length !== 1 ? 's' : ''}</Text>
+      <Text style={styles.countText}>
+        {filtered.length} machine{filtered.length !== 1 ? 's' : ''}
+      </Text>
 
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
         renderItem={({ item }: { item: Machine }) => (
-          <TouchableOpacity
-            style={styles.machineCard}
-            onPress={() => navigation.navigate('ReportEntry', { machine: item })}
-            activeOpacity={0.7}
-          >
-            <View style={styles.machineHeader}>
-              <Text style={styles.machineSerial}>{item.serial_number}</Text>
+          <View style={styles.machineCard}>
+            <View style={styles.machineTop}>
               <Text style={styles.machineModel}>{item.model}</Text>
+              <MaterialIcons name="more-vert" size={20} color={colors.text3} />
             </View>
-            <Text style={styles.machineLocation}>{item.location}</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.machineSerialRow}
+              onPress={() => navigation.navigate('ReportEntry', { machine: item })}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={`Machine ${item.serial_number}`}
+              accessibilityHint="Double tap to log a report for this machine"
+            >
+              <Text style={styles.machineSerial}>{item.serial_number}</Text>
+            </TouchableOpacity>
+            <View style={styles.machineLocationRow}>
+              <MaterialIcons name="location-on" size={16} color={colors.text3} style={styles.locationIcon} />
+              <Text style={styles.machineLocation}>{item.location}</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.actionPrimary}
+              onPress={() => navigation.navigate('ReportEntry', { machine: item })}
+              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={`New report for ${item.serial_number}`}
+            >
+              <Text style={styles.actionPrimaryText}>New DSR</Text>
+            </TouchableOpacity>
+          </View>
         )}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
@@ -93,113 +147,196 @@ export function MachineListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg0,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    paddingTop: 60,
-    backgroundColor: colors.bg2,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.borderDefault,
+    paddingVertical: spacing['lg'], // 24px
+    paddingHorizontal: spacing['xl'], // 32px
+    backgroundColor: colors.surfaceContainerHigh,
+    borderBottomWidth: StyleSheet.hairlineWidth, // 1px
+    borderBottomColor: colors.borderStrong,
+  },
+  headerIcon: {
+    marginRight: spacing['md'], // 16px
+  },
+  headerTitles: {
+    flex: 1,
+  },
+  brand: {
+    ...typography.label, // 12px Hanken Grotesk
+    color: colors.primary,
+    fontWeight: '700' as const,
+    textTransform: 'uppercase',
+    letterSpacing: 0.08,
   },
   greeting: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text1,
+    ...typography.bodyMd, // 16px IBM Plex Serif
+    color: colors.onSurface,
     textTransform: 'capitalize',
-  },
-  siteName: {
-    fontSize: 12,
-    color: colors.text3,
-    marginTop: 2,
+    marginTop: spacing['xs'], // 4px
   },
   logoutBtn: {
-    padding: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing['md'], // 16px
+  },
+  logoutIcon: {
+    marginRight: spacing['xs'], // 4px
   },
   logout: {
-    color: colors.text3,
-    fontSize: 13,
-    fontWeight: '500',
+    ...typography.label, // 12px Hanken Grotesk
+    color: colors.onSurfaceVariant,
+    fontWeight: '600' as const,
+    textTransform: 'uppercase',
+    letterSpacing: 0.08,
   },
   syncBanner: {
-    backgroundColor: colors.warningBg,
-    padding: 10,
+    flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: colors.warningBg,
+    paddingVertical: spacing['md'], // 16px
+    paddingHorizontal: spacing['lg'], // 24px
+  },
+  syncIcon: {
+    marginRight: spacing['sm'], // 8px
   },
   syncText: {
-    color: colors.warningFg,
-    fontSize: 12,
-    fontWeight: '600',
+    ...typography.label, // 12px Hanken Grotesk
+    color: colors.onError, // Using error color for warning as per design
+    fontWeight: '600' as const,
+    textTransform: 'uppercase',
+    letterSpacing: 0.08,
+  },
+  secondaryHeader: {
+    paddingHorizontal: spacing['xl'], // 32px
+    paddingTop: spacing['lg'], // 24px
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.borderStrong,
+    paddingBottom: spacing['lg'], // 24px
+  },
+  secondaryHeaderText: {
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
+    paddingLeft: spacing['md'], // 16px
+  },
+  siteName: {
+    ...typography.bodyLg, // 18px IBM Plex Serif
+    color: colors.onSurface,
+  },
+  siteMeta: {
+    ...typography.label, // 12px Hanken Grotesk
+    color: colors.onSurfaceVariant,
+    marginTop: spacing['xs'], // 4px
+    textTransform: 'uppercase',
+    letterSpacing: 0.08,
   },
   searchWrap: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: spacing['xl'], // 32px
+    marginTop: spacing['lg'], // 24px
+    backgroundColor: colors.surfaceContainerHighest, // bg3 equivalent
+    borderRadius: radii.sm, // 4px for interactive elements
+    borderWidth: StyleSheet.hairlineWidth, // 1px
+    borderColor: colors.borderDefault,
+    paddingHorizontal: spacing['lg'], // 24px
+  },
+  searchWrapFocused: {
+    borderBottomWidth: 2,
+    borderBottomColor: colors.primary,
+  },
+  searchIcon: {
+    marginRight: spacing['md'], // 16px
   },
   searchInput: {
-    backgroundColor: colors.bg2,
-    borderRadius: 6,
-    padding: 12,
-    fontSize: 14,
-    color: colors.text1,
-    borderWidth: 1,
-    borderColor: colors.borderDefault,
+    flex: 1,
+    paddingVertical: spacing['md'], // 16px
+    fontSize: typography.body.fontSize,
+    color: colors.onSurface,
   },
   countText: {
-    fontSize: 12,
-    color: colors.text3,
-    marginHorizontal: 20,
-    marginTop: 12,
-    marginBottom: 4,
+    ...typography.label, // 12px Hanken Grotesk
+    color: colors.onSurfaceVariant,
+    marginHorizontal: spacing['xl'], // 32px
+    marginVertical: spacing['lg'], // 24px
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 0.08,
   },
   list: {
-    paddingHorizontal: 16,
-    paddingBottom: 20,
+    paddingHorizontal: spacing['xl'], // 32px
+    paddingBottom: spacing['xl'], // 32px
   },
   machineCard: {
-    backgroundColor: colors.bg2,
-    borderRadius: 8,
-    padding: 16,
-    marginTop: 8,
-    borderWidth: 1,
+    backgroundColor: colors.surfaceContainerHigh, // bg2 equivalent
+    borderRadius: radii.md, // 8px per reference cards
+    borderWidth: StyleSheet.hairlineWidth, // 1px
     borderColor: colors.borderDefault,
+    marginVertical: spacing['md'], // 16px
+    padding: spacing['lg'], // 24px
+    overflow: 'hidden',
   },
-  machineHeader: {
+  machineTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
-  },
-  machineSerial: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.text1,
-    fontVariant: ['tabular-nums'],
+    marginBottom: spacing['sm'], // 8px
   },
   machineModel: {
-    fontSize: 11,
-    color: colors.accent,
-    backgroundColor: colors.accentSubtle,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 4,
-    overflow: 'hidden',
-    fontWeight: '600',
+    ...typography.label, // 12px Hanken Grotesk
+    color: colors.primary, // Amber
+    backgroundColor: colors.primaryContainer, // Amber container
+    paddingHorizontal: spacing['sm'], // 8px
+    paddingVertical: spacing['xs'], // 4px
+    borderRadius: radii.sm, // 4px for interactive elements
+    fontWeight: '600' as const,
+    textTransform: 'uppercase',
+    letterSpacing: 0.08,
+  },
+  machineSerialRow: {
+    marginBottom: spacing['xs'], // 4px
+  },
+  machineSerial: {
+    ...typography.displayLgMobile, // 32px Hanken Grotesk
+    color: colors.onSurface,
+    letterSpacing: -0.01,
+  },
+  machineLocationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  locationIcon: {
+    marginRight: spacing['xs'], // 4px
   },
   machineLocation: {
-    fontSize: 13,
-    color: colors.text2,
+    ...typography.label, // 12px Hanken Grotesk
+    color: colors.onSurfaceVariant,
+    textTransform: 'uppercase',
+    letterSpacing: 0.08,
+  },
+  actionPrimary: {
+    alignItems: 'center',
+    marginTop: spacing['lg'], // 24px
+    paddingVertical: spacing['sm'], // 8px
+    backgroundColor: colors.primary,
+    borderRadius: radii.sm, // 4px
+  },
+  actionPrimaryText: {
+    ...typography.label, // 12px Hanken Grotesk
+    color: colors.onPrimary,
+    fontWeight: '700' as const,
+    textTransform: 'uppercase',
+    letterSpacing: 0.08,
   },
   emptyState: {
     alignItems: 'center',
-    paddingVertical: 40,
+    paddingVertical: spacing['2xl'], // 48px
   },
   emptyText: {
-    color: colors.text3,
-    fontSize: 14,
+    ...typography.bodyMd, // 16px IBM Plex Serif
+    color: colors.onSurfaceVariant,
+    textAlign: 'center',
   },
 });

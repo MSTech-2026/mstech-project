@@ -9,15 +9,23 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import { useStore } from '../store';
+import { colors, typography, spacing, radii } from '../theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Atmosphere } from '../components/Atmosphere';
 
 export function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const initialize = useStore((s) => s.initialize);
+  const insets = useSafeAreaInsets();
 
   const handleLogin = async () => {
     setError('');
@@ -59,157 +67,269 @@ export function LoginScreen() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View style={styles.inner}>
+      <Atmosphere />
+      <View style={[styles.inner, { paddingTop: insets.top }]}>
         <View style={styles.headerBlock}>
+          <View style={styles.brandRow}>
+            <MaterialIcons name="factory" size={32} color={colors.primary} />
+            <View style={styles.brandLine} />
+          </View>
           <Text style={styles.title}>GIAL DSR</Text>
           <Text style={styles.subtitle}>Daily Service Reporting</Text>
         </View>
 
         <View style={styles.formCard}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="you@gial.com"
-            placeholderTextColor={colors.text4}
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            autoCorrect={false}
-          />
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your password"
-            placeholderTextColor={colors.text4}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
+          <View style={styles.cornerAccent} />
 
-          {error ? <Text style={styles.error}>Error: {error}</Text> : null}
+          <Text style={styles.label}>Operator Email Address</Text>
+          <View style={[styles.inputWrap, emailFocused && styles.inputWrapFocused]}>
+            <MaterialIcons
+              name="email"
+              size={20}
+              color={emailFocused ? colors.primary : colors.text3}
+              style={styles.inputIcon}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="OPERATOR@GIAL.COM"
+              placeholderTextColor={colors.surfaceContainerHighest}
+              value={email}
+              onChangeText={setEmail}
+              onFocus={() => setEmailFocused(true)}
+              onBlur={() => setEmailFocused(false)}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              autoCorrect={false}
+              accessibilityLabel="Email address"
+              accessibilityHint="Enter your GIAL email address"
+            />
+          </View>
+
+          <Text style={styles.label}>Security Access Code</Text>
+          <View style={[styles.inputWrap, passwordFocused && styles.inputWrapFocused]}>
+            <MaterialIcons
+              name="lock"
+              size={20}
+              color={passwordFocused ? colors.primary : colors.text3}
+              style={styles.inputIcon}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="••••••••"
+              placeholderTextColor={colors.surfaceContainerHighest}
+              value={password}
+              onChangeText={setPassword}
+              onFocus={() => setPasswordFocused(true)}
+              onBlur={() => setPasswordFocused(false)}
+              secureTextEntry={!showPassword}
+              accessibilityLabel="Password"
+              accessibilityHint="Enter your password"
+            />
+            <TouchableOpacity
+              onPress={() => setShowPassword((v) => !v)}
+              style={styles.eyeButton}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              activeOpacity={0.7}
+              accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+              accessibilityHint="Toggle password visibility"
+            >
+              <MaterialIcons
+                name={showPassword ? 'visibility' : 'visibility-off'}
+                size={22}
+                color={showPassword ? colors.primary : colors.text3}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {error ? <Text style={styles.error}>{error}</Text> : null}
 
           <TouchableOpacity
             style={[styles.button, loading && styles.buttonDisabled]}
             onPress={handleLogin}
             disabled={loading}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel="Sign in"
+            accessibilityState={{ disabled: loading }}
           >
             {loading ? (
-              <ActivityIndicator color={colors.accentFg} />
+              <ActivityIndicator color={colors.onPrimary} />
             ) : (
-              <Text style={styles.buttonText}>Sign in</Text>
+              <>
+                <Text style={styles.buttonText}>Sign in</Text>
+                <MaterialIcons name="login" size={20} color={colors.onPrimary} style={styles.buttonIcon} />
+              </>
             )}
           </TouchableOpacity>
+        </View>
+
+        <View style={styles.footer}>
+          <View style={styles.footerLeft}>
+            <View style={styles.statusDot} />
+            <Text style={styles.statusText}>System Status: Online</Text>
+          </View>
+          <Text style={styles.buildText}>V.2.4.0-STABLE</Text>
         </View>
       </View>
     </KeyboardAvoidingView>
   );
 }
 
-export const colors = {
-  bg0: '#171412',
-  bg1: '#1e1b18',
-  bg2: '#272320',
-  bg3: '#302b27',
-  bg4: '#3d3732',
-  borderSubtle: '#302b27',
-  borderDefault: '#3d3732',
-  borderStrong: '#524b44',
-  text0: '#f2efec',
-  text1: '#dbd5cf',
-  text2: '#b3aaa0',
-  text3: '#8c8278',
-  text4: '#6b6158',
-  accent: '#d4940a',
-  accentHover: '#e0a820',
-  accentActive: '#b87e08',
-  accentSubtle: '#302510',
-  accentFg: '#171412',
-  focus: '#d4940a',
-  verified: '#3daa6d',
-  verifiedBg: '#1a3328',
-  verifiedFg: '#b8eacc',
-  failed: '#d44a3a',
-  failedBg: '#331a16',
-  failedFg: '#ecc8c3',
-  bypass: '#b89a3d',
-  bypassBg: '#332a16',
-  bypassFg: '#ece0c3',
-  warning: '#d4a43d',
-  warningBg: '#332a16',
-  warningFg: '#171412',
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg0,
+    backgroundColor: colors.background,
   },
   inner: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 28,
+    paddingHorizontal: spacing['2xl'], // 48px margin-desktop
   },
   headerBlock: {
-    marginBottom: 36,
+    marginBottom: spacing['2xl'], // 48px
+    alignItems: 'flex-start',
+  },
+  brandRow: {
+    flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: spacing['md'], // 16px
+  },
+  brandLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.borderStrong,
+    marginLeft: spacing['sm'], // 8px
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text0,
-    letterSpacing: -0.5,
+    ...typography.displayLgMobile, // 32px Hanken Grotesk
+    color: colors.onSurface,
+    textTransform: 'uppercase',
+    letterSpacing: -0.01, // -0.01em for display-lg-mobile
   },
   subtitle: {
-    fontSize: 13,
-    color: colors.text3,
-    marginTop: 4,
+    ...typography.label, // 12px Hanken Grotesk
+    color: colors.onSurfaceVariant,
+    marginTop: spacing['xs'], // 4px
   },
   formCard: {
-    backgroundColor: colors.bg2,
-    borderRadius: 10,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: colors.borderDefault,
+    backgroundColor: colors.surfaceContainerHigh, // bg2 equivalent
+    borderRadius: 0, // Structural elements have 0px radius per design
+    padding: spacing['xl'], // 32px
+    borderWidth: StyleSheet.hairlineWidth, // 1px border
+    borderColor: colors.borderStrong,
+    // Add industrial accent line (left border)
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
+    overflow: 'hidden',
+  },
+  cornerAccent: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 32,
+    height: 32,
+    borderTopWidth: 2,
+    borderRightWidth: 2,
+    borderColor: colors.primary,
+    transform: [{ translateX: 1 }, { translateY: -1 }],
   },
   label: {
-    fontSize: 11,
-    color: colors.text3,
-    marginBottom: 6,
-    fontWeight: '600',
+    ...typography.label, // 12px Hanken Grotesk
+    color: colors.onSurfaceVariant,
+    marginBottom: spacing['xs'], // 4px
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 0.08, // 8% as per design
+  },
+  inputWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surfaceContainerLow, // bg1 equivalent
+    borderRadius: radii.sm, // 4px for interactive elements
+    borderWidth: StyleSheet.hairlineWidth, // 1px border
+    borderColor: colors.borderStrong,
+    paddingHorizontal: spacing['lg'], // 24px
+    paddingVertical: spacing['md'], // 16px
+    marginBottom: spacing['lg'], // 24px
+  },
+  inputWrapFocused: {
+    borderBottomWidth: 2, // 2px Amber on focus
+    borderBottomColor: colors.primary,
+  },
+  inputIcon: {
+    marginRight: spacing['md'], // 16px
+  },
+  eyeButton: {
+    padding: spacing['xs'],
+    marginLeft: spacing['sm'],
   },
   input: {
-    backgroundColor: colors.bg1,
-    borderRadius: 6,
-    padding: 12,
-    fontSize: 15,
-    color: colors.text1,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: colors.borderDefault,
+    flex: 1,
+    fontSize: typography.body.fontSize,
+    color: colors.onSurface,
+    fontFamily: typography.mono.fontFamily,
   },
   button: {
-    backgroundColor: colors.accent,
-    borderRadius: 6,
-    padding: 14,
+    backgroundColor: colors.primaryContainer, // Amber container
+    borderRadius: radii.md, // 8px for interactive elements
+    paddingVertical: spacing['lg'], // 24px
+    paddingHorizontal: spacing['xl'], // 32px
+    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 8,
+    justifyContent: 'center',
+    marginTop: spacing['md'], // 16px
   },
   buttonDisabled: {
     opacity: 0.5,
   },
   buttonText: {
-    color: colors.accentFg,
-    fontSize: 15,
-    fontWeight: '700',
+    ...typography.label, // 12px Hanken Grotesk
+    color: colors.onPrimary, // Dark amber text on primary background
+    fontWeight: '700' as const,
+    textTransform: 'uppercase',
+    letterSpacing: 0.08,
+  },
+  buttonIcon: {
+    marginLeft: spacing['sm'], // 8px
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: spacing['2xl'], // 48px
+    paddingTop: spacing['lg'], // 24px
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: colors.borderStrong,
+  },
+  footerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 9999,
+    backgroundColor: colors.primary,
+    marginRight: spacing['sm'], // 8px
+  },
+  statusText: {
+    ...typography.label, // 12px Hanken Grotesk
+    color: colors.onSurface,
+    textTransform: 'uppercase',
+    letterSpacing: 0.08,
+    fontWeight: '600' as const,
+  },
+  buildText: {
+    ...(typography.mono as object), // 14px JetBrains Mono
+    color: colors.text3,
+    fontSize: 10,
+    fontVariant: ['tabular-nums' as const],
+    fontFamily: typography.mono.fontFamily,
+    fontWeight: '600' as const,
   },
   error: {
-    color: colors.failed,
-    fontSize: 13,
-    marginBottom: 12,
+    ...typography.body, // 14px IBM Plex Serif
+    color: colors.error,
+    marginBottom: spacing['lg'], // 24px
     textAlign: 'center',
   },
 });

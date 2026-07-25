@@ -59,9 +59,8 @@ export async function exportToExcel(reports: DailyReport[], filename: string = '
 
 
     const countCell = row.getCell(2);
+    styleEvkCell(countCell, r.evk_status);
     countCell.alignment = { vertical: 'middle', horizontal: 'right' };
-    const colors = EVK_COLORS[r.evk_status] || EVK_COLORS.verified;
-    countCell.font = { ...CELL_STYLE.font, color: { argb: colors.fg } };
   });
 
   worksheet.columns = [
@@ -75,20 +74,27 @@ export async function exportToExcel(reports: DailyReport[], filename: string = '
 export async function exportMonthlyReport(
   reports: DailyReport[],
   machines: Array<{ id: string; serial_number: string; model: string }>,
-  year: number,
-  month: number,
+  dateFrom: string,
+  dateTo: string,
   filename?: string,
 ) {
   const workbook = new ExcelJS.Workbook();
-  const monthName = new Date(year, month - 1).toLocaleString('en-US', { month: 'long' });
-  const worksheet = workbook.addWorksheet(`${monthName} ${year}`);
+  const worksheet = workbook.addWorksheet('DSR Monthly');
 
-  const daysInMonth = new Date(year, month, 0).getDate();
+  // Build date column list spanning the range
+  const dateCols: string[] = [];
+  const current = new Date(dateFrom + 'T00:00:00');
+  const end = new Date(dateTo + 'T00:00:00');
+  while (current <= end) {
+    dateCols.push(current.toISOString().slice(0, 10));
+    current.setDate(current.getDate() + 1);
+  }
 
   const headers: string[] = ['Machine', 'Model'];
-  for (let d = 1; d <= daysInMonth; d++) {
-    headers.push(String(d));
-  }
+  dateCols.forEach((d) => {
+    const parts = d.split('-');
+    headers.push(`${parseInt(parts[1])}/${parseInt(parts[2])}`);
+  });
   headers.push('Total', 'Verified', 'Failed', 'Bypass');
 
   const headerRow = worksheet.addRow(headers);
@@ -99,12 +105,11 @@ export async function exportMonthlyReport(
   });
   headerRow.height = 24;
 
-  // Build pivot: machine_id -> day -> report
-  const pivot: Record<string, Record<number, DailyReport>> = {};
+  // Build pivot: machine_id -> date_string -> report
+  const pivot: Record<string, Record<string, DailyReport>> = {};
   reports.forEach((r) => {
-    const day = new Date(r.report_date).getDate();
     if (!pivot[r.machine_id]) pivot[r.machine_id] = {};
-    pivot[r.machine_id][day] = r;
+    pivot[r.machine_id][r.report_date] = r;
   });
 
   // Fill rows
@@ -112,13 +117,10 @@ export async function exportMonthlyReport(
     const machineData = pivot[machine.id] || {};
     const rowValues: (string | number)[] = [machine.serial_number, machine.model];
 
-    let total = 0;
-    let verified = 0;
-    let failed = 0;
-    let bypass = 0;
+    let total = 0, verified = 0, failed = 0, bypass = 0;
 
-    for (let d = 1; d <= daysInMonth; d++) {
-      const report = machineData[d];
+    dateCols.forEach((dateKey) => {
+      const report = machineData[dateKey];
       if (report) {
         rowValues.push(report.sample_count);
         total += report.sample_count;
@@ -128,20 +130,18 @@ export async function exportMonthlyReport(
       } else {
         rowValues.push('');
       }
-    }
+    });
 
     rowValues.push(total, verified, failed, bypass);
 
     const row = worksheet.addRow(rowValues);
 
-    // Style machine name and model columns
     row.getCell(1).font = { bold: true, color: { argb: 'FF111827' }, size: 11 };
     row.getCell(2).font = { color: { argb: 'FF475569' }, size: 10 };
 
-    // Style day cells with EVK colors
-    for (let d = 1; d <= daysInMonth; d++) {
-      const cell = row.getCell(d + 2); // +2 because columns 1 and 2 are machine/model
-      const report = machineData[d];
+    dateCols.forEach((dateKey, idx) => {
+      const cell = row.getCell(idx + 3); // +3 = machine(1) + model(2) + idx
+      const report = machineData[dateKey];
       if (report) {
         styleEvkCell(cell, report.evk_status);
         cell.alignment = { horizontal: 'center', vertical: 'middle' };
@@ -150,10 +150,10 @@ export async function exportMonthlyReport(
         cell.font = { color: { argb: 'FF94A3B8' }, size: 10 };
         cell.alignment = { horizontal: 'center', vertical: 'middle' };
       }
-    }
+    });
 
     // Style summary columns
-    const summaryStart = daysInMonth + 3;
+    const summaryStart = dateCols.length + 3;
     for (let i = 0; i < 4; i++) {
       const cell = row.getCell(summaryStart + i);
       cell.font = { bold: true, color: { argb: 'FF111827' }, size: 11 };
@@ -166,14 +166,14 @@ export async function exportMonthlyReport(
   worksheet.columns = [
     { width: 18 }, // Machine
     { width: 16 }, // Model
-    ...Array(daysInMonth).fill({ width: 5 }), // Days
+    ...Array(dateCols.length).fill({ width: 5 }), // Date columns
     { width: 8 },  // Total
     { width: 10 }, // Verified
     { width: 8 },  // Failed
     { width: 8 },  // Bypass
   ];
 
-  const finalFilename = filename || `GIAL-DSR-${monthName}-${year}.xlsx`;
+  const finalFilename = filename || `GIAL-DSR-${dateFrom}_to_${dateTo}.xlsx`;
   const buffer = await workbook.xlsx.writeBuffer();
   saveAs(new Blob([buffer]), finalFilename);
 }

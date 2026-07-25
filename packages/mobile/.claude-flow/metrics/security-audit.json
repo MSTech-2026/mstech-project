@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-07-12T00:57:55.979Z",
+  "mode": "headless",
+  "workerType": "audit",
+  "model": "haiku",
+  "durationMs": 90191,
+  "executionId": "audit_1783817785788_iz0r7l",
+  "success": true,
+  "findings": {
+    "vulnerabilities": [
+      {
+        "severity": "high",
+        "file": ".env",
+        "line": 1,
+        "description": "Hardcoded Supabase credentials committed to git. The `.env` file is tracked in version control, exposing the Supabase project URL and anon key permanently in git history. While the anon key is designed for client-side usage (protected by RLS), this sets a dangerous precedent — committing credentials to git risks exposure of real secrets (API keys, tokens) if the `.env` is extended later."
+      },
+      {
+        "severity": "high",
+        "file": "src/lib/sync.ts",
+        "line": 71,
+        "description": "Raw Supabase error messages and internal PostgreSQL error codes are returned to callers. Error codes `23505` (unique violation), `42501` (RLS forbidden), and `42P01` (undefined_table) leak database schema details, table names, and RLS policy structure. An attacker can enumerate valid table names and deduce the schema through error-based probing."
+      },
+      {
+        "severity": "high",
+        "file": "src/lib/sync.ts",
+        "line": 46,
+        "description": "Raw database error messages propagated through `flushPendingQueue` — errors caught in the inner try-catch are stored directly via `updatePendingReportStatus(..., error.message)`, persisting them in the local database where they may be displayed later, leaking schema information to anyone who views the error logs."
+      },
+      {
+        "severity": "medium",
+        "file": "src/lib/db.web.ts",
+        "line": 1,
+        "description": "All pending report data stored unencrypted in `localStorage` via JSON serialization. Any JavaScript executing on the same origin (XSS, rogue browser extension, compromised dependency) can read, modify, or exfiltrate the entire pending reports dataset including machine IDs, EVK statuses, and failure reasons."
+      },
+      {
+        "severity": "medium",
+        "file": "src/lib/supabase.ts",
+        "line": 4,
+        "description": "Environment variable fallbacks to empty string. If `EXPO_PUBLIC_SUPABASE_URL` or `EXPO_PUBLIC_SUPABASE_ANON_KEY` are missing at build time, the client initializes with empty strings, causing a silent auth failure that may only surface as cryptic API errors at runtime."
+      },
+      {
+        "severity": "low",
+        "file": "src/store/index.ts",
+        "line": 58,
+        "description": "No runtime input validation on data received from Supabase. The `fetchProfile` and `fetchMachines` functions cast raw API responses to TypeScript types (`as Profile`, `as Machine[]`) without validating shape or constraints. A compromised or misconfigured Supabase instance could inject malformed data into the client store."
+      },
+      {
+        "severity": "low",
+        "file": "src/lib/sync.ts",
+        "line": 14,
+        "description": "NetInfo connectivity listener triggers auto-sync whenever network state changes without rate limiting. If the network rapidly transitions between connected/disconnected states (e.g., flaky Wi-Fi), `flushPendingQueue` could be invoked repeatedly in quick succession, potentially causing multiple concurrent sync attempts against the same reports."
+      },
+      {
+        "severity": "low",
+        "file": "src/lib/sync.ts",
+        "line": 62,
+        "description": "Bare `catch` blocks throughout `flushPendingQueue` and `submitReport` silently swallow exceptions without logging, making debugging difficult and potentially masking security-relevant errors (e.g., RLS policy violations, auth token expiration)."
+      }
+    ],
+    "riskScore": 65,
+    "recommendations": [
+      "Remove `.env` from git tracking immediately — add it to `.gitignore` and rotate the Supabase anon key (even though it's an 'anon' key, rotation invalidates the committed copy as a best practice).",
+      "Sanitize error messages in `sync.ts` — map database error codes to generic application-level errors (e.g., 'SYNC_FAILED', 'DUPLICATE'). Never propagate raw PostgreSQL error codes or messages to the UI or persistent storage.",
+      "Encrypt pending report data in the web localStorage wrapper using a derived key (Web Crypto API) or at minimum serialize with integrity checks (HMAC) to detect tampering.",
+      "Add explicit RLS policy verification tests in CI — ensure the anon key's effective permissions are limited to only what the mobile app needs (INSERT/ SELECT on specific tables, no direct table access).",
+      "Add runtime input validation (using Zod or io-ts) at the store boundary where Supabase responses enter the application, so malformed data is caught before populating the client state.",
+      "Add a debounce or deduplication guard on the NetInfo sync trigger to prevent rapid consecutive sync flushes under flaky network conditions.",
+      "Configure Expo's environment variable validation at build time so missing `EXPO_PUBLIC_*` values cause a build failure instead of silent fallback to empty strings.",
+      "Replace bare `catch {}` blocks in `sync.ts` with at least a `console.error` or structured logging call so sync failures are observable during development and incident response."
+    ]
+  },
+  "rawOutputPreview": "I've analyzed the codebase across all the requested dimensions. Here's the security report:\n\n## Security Audit Report\n\n`★ Insight ─────────────────────────────────────`\nKey findings three layers deep:\n- **Secrets in git**: The `.env` file is tracked — Supabase anon key embedded. Even though anon keys are designed for client use (RLS provides protection), committing them normalizes bad practice and leaves a permanent trail. If the env is later extended with real secrets, they'd be exposed retroactively.\n- **Error code leakage**: `sync.ts` returns raw PostgreSQL error codes (`42P01`, `42501`, `23505`) to callers — these reveal schema structure (table exists vs. doesn't), RLS policy boundaries, and uniqueness constraints. This is a reconnaissance vector for targeted attacks.\n- **Web localStorage in plaintext**: `db.web.ts` stores all pending reports unencrypted in `localStorage`. Any XSS or extension on the same origin can exfiltrate the full dataset. SQLite at least has file-level OS protection.\n`─────────────────────────────────────────────────`\n\n```json\n{\n  \"vulnerabilities\": [\n    {\n      \"severity\": \"high\",\n      \"file\": \".env\",\n      \"line\": 1,\n      \"description\": \"Hardcoded Supabase credentials committed to git. The `.env` file is tracked in version control, exposing the Supabase project URL and anon key permanently in git history. While the anon key is designed for client-side usage (protected by RLS), this sets a dangerous precedent — committing credentials to git risks exposure of real secrets (API keys, tokens) if the `.env` is extended later.\"\n    },\n    {\n      \"severity\": \"high\",\n      \"file\": \"src/lib/sync.ts\",\n      \"line\": 71,\n      \"description\": \"Raw Supabase error messages and internal PostgreSQL error codes are returned to callers. Error codes `23505` (unique violation), `42501` (RLS forbidden), and `42P01` (undefined_table) leak database schema details, table names, and RLS policy structure. An attacker can enumerate valid table names and deduce ",
+  "rawOutputLength": 6497
+}

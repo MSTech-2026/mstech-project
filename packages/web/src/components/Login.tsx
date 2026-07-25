@@ -18,152 +18,68 @@ export function Login({ onLogin, initialError }: LoginProps) {
     setError('');
     setLoading(true);
 
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    });
-
+    const { data, error: authError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     if (authError) {
-      setError(authError.message);
+      setError('Invalid email or password. Please try again.');
       setLoading(false);
       return;
     }
 
     if (data.user) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
-
+      const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.user.id).single();
       if (!profile || !['admin', 'sysadmin'].includes(profile.role)) {
         await supabase.auth.signOut();
         setError('Access restricted to Admin and SysAdmin roles.');
         setLoading(false);
         return;
       }
-
       onLogin(profile as Profile);
     }
-
     setLoading(false);
   };
 
   return (
-    <div style={styles.container}>
-      <form style={styles.card} onSubmit={handleSubmit}>
-        <div style={styles.header}>
-          <h1 style={styles.title}>GIAL DSR</h1>
-          <p style={styles.subtitle}>Admin Portal, Guwahati International Airport</p>
+    <div className="login-screen">
+      <div className="login-decor login-decor-1">&#9992;</div>
+      <div className="login-decor login-decor-2">&#127758;</div>
+
+      <form className="login-card" onSubmit={handleSubmit}>
+        <div className="login-header">
+          <h1 className="login-title">GIAL DSR</h1>
+          <p className="login-subtitle">Admin Portal, Guwahati International Airport</p>
         </div>
 
-        <div style={styles.field}>
-          <label style={styles.label}>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={styles.input}
-            required
-            autoFocus
-          />
-        </div>
-        <div style={styles.field}>
-          <label style={styles.label}>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
-            required
-          />
+        <div className="login-field">
+          <label htmlFor="login-email" className="login-label">Email</label>
+          <div className="login-input-wrapper">
+            <span className="login-input-icon">&#9993;</span>
+            <input id="login-email" type="email" className="login-input" placeholder="admin@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />
+          </div>
         </div>
 
-        {error && <p style={styles.error} role="alert"><span className="sr-only">Error: </span>{error}</p>}
+        <div className="login-field">
+          <label htmlFor="login-password" className="login-label">Password</label>
+          <div className="login-input-wrapper">
+            <span className="login-input-icon">&#128274;</span>
+            <input id="login-password" type="password" className="login-input" placeholder="Your password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          </div>
+        </div>
 
-        <button type="submit" disabled={loading} style={styles.button}>
+        {error && (
+          <div className="login-error animate-shake" role="alert">
+            <span className="sr-only">Error: </span>
+            <span style={{ fontSize: '18px' }}>&#9888;</span> {error}
+          </div>
+        )}
+
+        <button type="submit" className="login-btn" disabled={loading}>
           {loading ? 'Signing in...' : 'Sign in'}
         </button>
+
+        <div className="login-footer">
+          <span className="login-footer-text">Secured by Supabase &middot; GIAL Airport Authority</span>
+        </div>
       </form>
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'var(--bg-0)',
-    padding: '24px',
-  },
-  card: {
-    backgroundColor: 'var(--bg-2)',
-    padding: '36px 40px',
-    borderRadius: '10px',
-    width: '100%',
-    maxWidth: '380px',
-    border: '1px solid var(--border-default)',
-  },
-  header: {
-    marginBottom: '32px',
-    paddingBottom: '24px',
-    borderBottom: '1px solid var(--border-subtle)',
-  },
-  title: {
-    fontSize: '20px',
-    fontWeight: 700,
-    color: 'var(--text-0)',
-    margin: '0 0 4px 0',
-    letterSpacing: '-0.01em',
-  },
-  subtitle: {
-    fontSize: '12px',
-    color: 'var(--text-3)',
-    margin: 0,
-  },
-  field: {
-    marginBottom: '16px',
-  },
-  label: {
-    display: 'block',
-    fontSize: '11px',
-    color: 'var(--text-3)',
-    marginBottom: '6px',
-    fontWeight: 500,
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
-  },
-  input: {
-    width: '100%',
-    padding: '10px 12px',
-    backgroundColor: 'var(--bg-1)',
-    border: '1px solid var(--border-default)',
-    borderRadius: '6px',
-    fontSize: '14px',
-    color: 'var(--text-1)',
-    outline: 'none',
-    boxSizing: 'border-box' as const,
-    transition: 'border-color 0.15s ease',
-  },
-  error: {
-    color: 'var(--failed)',
-    fontSize: '12px',
-    marginBottom: '12px',
-    textAlign: 'center',
-  },
-  button: {
-    width: '100%',
-    padding: '11px',
-    backgroundColor: 'var(--accent)',
-    color: 'var(--accent-fg)',
-    border: 'none',
-    borderRadius: '6px',
-    fontSize: '14px',
-    fontWeight: 600,
-    cursor: 'pointer',
-    marginTop: '8px',
-    transition: 'background-color 0.12s ease',
-  },
-};

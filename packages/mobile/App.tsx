@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoginScreen } from './src/screens/LoginScreen';
@@ -8,6 +8,8 @@ import { ReportEntryScreen } from './src/screens/ReportEntryScreen';
 import { useStore } from './src/store';
 import { startSyncListener } from './src/lib/sync';
 import { supabase } from './src/lib/supabase';
+import { colors } from './src/theme';
+import { Atmosphere } from './src/components/Atmosphere';
 
 const Stack = createNativeStackNavigator();
 
@@ -40,18 +42,23 @@ export default function App() {
   }, []);
 
   if (isLoading) {
-    return <StatusBar barStyle="light-content" />;
+    return (
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <Atmosphere />
+        <StatusBar barStyle="light-content" />
+      </View>
+    );
   }
 
   return (
     <NavigationContainer>
-      <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
+      <StatusBar barStyle="light-content" backgroundColor={colors.background} />
       <Stack.Navigator
         screenOptions={{
-          headerStyle: { backgroundColor: '#1e293b' },
-          headerTintColor: '#ffffff',
+          headerStyle: { backgroundColor: colors.surfaceContainerHigh },
+          headerTintColor: colors.onSurface,
           headerTitleStyle: { fontWeight: '600' },
-          contentStyle: { backgroundColor: '#0f172a' },
+          contentStyle: { backgroundColor: colors.background },
         }}
       >
         {user ? (

@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-07-11T16:00:56.663Z",
+  "projectRoot": "/home/sumeet/MSTech/packages/web",
+  "structure": {
+    "hasPackageJson": true,
+    "hasTsConfig": true,
+    "hasClaudeConfig": true,
+    "hasClaudeFlow": true
+  },
+  "scannedAt": 1783785656663
+}
