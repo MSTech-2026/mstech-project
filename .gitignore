@@ -17,3 +17,5 @@ coverage/
 !README.md
 .commandcode/
 graphify-out/
+stitch_gial_dsr_admin_portal/
+stitch_gial_industrial_service_tool/
